@@ -6,21 +6,21 @@ from conan.tools.microsoft import is_msvc
 from conan.tools.microsoft.toolchain import msvs_toolset
 
 
-class CppTemplate(ConanFile):
-    name = "CppTemplate"
+class RtOneWeekend(ConanFile):
+    name = "RaytracingInAWeekend"
     version = "1.0"
     package_type = "application"
 
     license = "MIT"
-    author = ""
-    url = ""
-    description = "C++ template."
-    topics = ("C++", "Conan", "Template")
+    author = "arnor-nolen"
+    url = "https://github.com/arnor-nolen/rt-one-weekend"
+    description = "Raytracing in one weekend implementation."
+    topics = ("C++", "Conan", "Raytracing", "Raytracing in one weekend")
 
     settings = "os", "compiler", "build_type", "arch"
     exports_sources = "CMakeLists.txt", "src/*"
 
-    default_options = {"fmt/*:shared": True}
+    default_options = {}
 
     def requirements(self):
         self.requires("fmt/10.1.1")

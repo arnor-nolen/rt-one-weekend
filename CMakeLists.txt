@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(cpp-template)
+project(rt-one-weekend)
 
 # Additional options.
 set(ENABLE_CMD_WINDOW

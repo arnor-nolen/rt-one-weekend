@@ -1,5 +1,5 @@
-# cpp-template
-C++ template project.
+# rt-one-weekend
+Raytracing in one weekend. Based on the [book with the same name](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
 ## Dependencies
 Dependencies are listed in [conanfile.py](./conanfile.py).
@@ -19,5 +19,5 @@ Check contents of [CMakePresets.json](./CMakePresets.json) for more info.
 
 ## How to run
 ```sh
-./build/Debug/bin/cpp-template
+./build/Debug/bin/rt-one-weekend
 ```
