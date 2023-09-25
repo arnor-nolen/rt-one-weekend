@@ -1,6 +1,8 @@
 # rt-one-weekend
 Raytracing in one weekend. Based on the [book with the same name](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
+C++ 20 compliant.
+
 ## Dependencies
 Dependencies are listed in [conanfile.py](./conanfile.py).
 
