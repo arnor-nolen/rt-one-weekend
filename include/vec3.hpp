@@ -2,7 +2,6 @@
 #define VEC3_HPP
 
 #include <array>
-#include <concepts>
 #include <cstddef>
 
 #include <fmt/format.h>
