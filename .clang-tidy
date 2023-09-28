@@ -7,7 +7,12 @@ Checks: >
   -llvmlibc-*,
   -altera-unroll-loops,
   -readability-uppercase-literal-suffix,
-  -hicpp-uppercase-literal-suffix
+  -hicpp-uppercase-literal-suffix,
+
+  -bugprone-easily-swappable-parameters,
+  -altera-id-dependent-backward-branch,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -readability-magic-numbers
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
 FormatStyle: none

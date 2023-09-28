@@ -78,7 +78,7 @@ endif()
 # -------------------------------------
 
 # Build the main app.
-set(SOURCE_FILES "src/main.cpp" "src/vec3.cpp" "src/color.cpp")
+set(SOURCE_FILES "src/main.cpp" "src/vec3.cpp" "src/color.cpp" "src/ray.cpp")
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_compile_features(${PROJECT_NAME} PUBLIC ${TARGET_COMPILE_FEATURES})
 
