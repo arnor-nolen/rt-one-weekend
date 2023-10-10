@@ -7,7 +7,23 @@
 #include <ray.hpp>
 #include <vec3.hpp>
 
+auto hit_sphere(const Point3 &center, double radius, const Ray &ray) -> bool {
+    auto vec = ray.origin() - center;
+
+    auto quadA = dot(ray.direction(), ray.direction());
+    auto quadB = 2.0 * dot(vec, ray.direction());
+    auto quadC = dot(vec, vec) - radius * radius;
+
+    auto discriminant = quadB * quadB - 4 * quadA * quadC;
+
+    return discriminant >= 0;
+}
+
 auto ray_color(const Ray &ray) noexcept -> Color {
+    if (hit_sphere(Point3{0, 0, -1}, 0.5, ray)) {
+        return Color{1, 0, 0};
+    }
+
     Vec3 unitDirection = unit_vector(ray.direction());
     const auto currentValue = 0.5 * (unitDirection.y() + 1.0);
 
