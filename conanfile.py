@@ -20,10 +20,22 @@ class RtOneWeekend(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     exports_sources = "CMakeLists.txt", "src/*"
 
-    default_options = {}
+    default_options = {
+        "cimg/*:enable_fftw": False,
+        "cimg/*:enable_jpeg": False,
+        "cimg/*:enable_openexr": False,
+        "cimg/*:enable_png": True,
+        "cimg/*:enable_tiff": False,
+        "cimg/*:enable_ffmpeg": False,
+        "cimg/*:enable_opencv": False,
+        "cimg/*:enable_magick": False,
+        "cimg/*:enable_xrandr": False,
+        "cimg/*:enable_xshm": False,
+    }
 
     def requirements(self):
         self.requires("fmt/10.1.1")
+        self.requires("cimg/3.3.0")
 
     def generate(self):
         deps = CMakeDeps(self)

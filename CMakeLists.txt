@@ -38,6 +38,7 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 # Setting up dependencies (using CONFIG so find_package doesn't conflict with cmake's own
 # findX.cmake).
 find_package(fmt REQUIRED CONFIG)
+find_package(cimg REQUIRED CONFIG)
 
 # Set C++ standard.
 set(TARGET_COMPILE_FEATURES cxx_std_20)
@@ -90,4 +91,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 # -------------------------------------
 
 # Link libraries.
-target_link_libraries(${PROJECT_NAME} fmt::fmt)
+target_link_libraries(${PROJECT_NAME} fmt::fmt cimg::cimg)

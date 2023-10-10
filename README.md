@@ -21,9 +21,10 @@ Check contents of [CMakePresets.json](./CMakePresets.json) for more info.
 
 ## How to run
 ```sh
-./build/Debug/bin/rt-one-weekend > output/image.ppm
+./build/Debug/bin/rt-one-weekend
 ```
 
 ## Result
-Here's the output produced by the program:
+The output produced by the program will be output [here](./output/image.png).
+
 ![Image](./output/image.ppm "Image")

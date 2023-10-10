@@ -1,7 +1,9 @@
 #include <cstddef>
 #include <cstdlib>
+#include <filesystem>
 
 #include <fmt/format.h>
+#include <impls/cimg.hpp>
 
 #include <color.hpp>
 #include <ray.hpp>
@@ -58,10 +60,11 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
     auto pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
     // Renderer.
-    fmt::print("P3\n {} {} \n255\n", imageWidth, imageHeight);
+    auto image =
+        cimg_library::CImg<uint8_t>(imageWidth, imageHeight, 1u, 3u, 0u);
 
     for (size_t j = 0; j < imageHeight; ++j) {
-        fmt::print(stderr, "Scanlines remaining: {}.\n", imageHeight - j);
+        fmt::print("Scanlines remaining: {}.\n", imageHeight - j);
         for (size_t i = 0; i < imageWidth; ++i) {
             auto pixelCenter = pixel00Loc +
                                (static_cast<double>(i) * pixelDeltaU) +
@@ -69,11 +72,22 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
             auto rayDirection = pixelCenter - cameraCenter;
             auto ray = Ray{cameraCenter, rayDirection};
 
-            auto pixelColor = ray_color(ray);
+            auto pixelColor = convert_color(ray_color(ray));
 
-            write_color(stdout, pixelColor);
+            auto colorArray =
+                std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.x()),
+                                       static_cast<uint8_t>(pixelColor.y()),
+                                       static_cast<uint8_t>(pixelColor.z())};
+
+            image.draw_point(static_cast<int>(i), static_cast<int>(j),
+                             colorArray.data());
         }
     }
+
+    const auto outputPath = std::filesystem::path("./output/image.png");
+    image.save_png(outputPath.c_str());
+
+    fmt::print("\nImage saved to \"{}\".\n", outputPath.string());
 
     return EXIT_SUCCESS;
 }
