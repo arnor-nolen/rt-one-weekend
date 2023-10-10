@@ -60,8 +60,9 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
     auto pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
     // Renderer.
-    auto image =
-        cimg_library::CImg<uint8_t>(imageWidth, imageHeight, 1u, 3u, 0u);
+    auto image = cimg_library::CImg<uint8_t>(
+        static_cast<unsigned int>(imageWidth),
+        static_cast<unsigned int>(imageHeight), 1u, 3u, 0u);
 
     for (size_t j = 0; j < imageHeight; ++j) {
         fmt::print("Scanlines remaining: {}.\n", imageHeight - j);
@@ -69,6 +70,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
             auto pixelCenter = pixel00Loc +
                                (static_cast<double>(i) * pixelDeltaU) +
                                (static_cast<double>(j) * pixelDeltaV);
+
             auto rayDirection = pixelCenter - cameraCenter;
             auto ray = Ray{cameraCenter, rayDirection};
 
@@ -84,8 +86,10 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
         }
     }
 
+    // Windows doesn't play nicely with save_png and std::filesystem, so we
+    // have to convert twice.
     const auto outputPath = std::filesystem::path("./output/image.png");
-    image.save_png(outputPath.c_str());
+    image.save_png(outputPath.string().c_str());
 
     fmt::print("\nImage saved to \"{}\".\n", outputPath.string());
 
