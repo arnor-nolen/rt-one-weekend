@@ -27,4 +27,4 @@ Check contents of [CMakePresets.json](./CMakePresets.json) for more info.
 ## Result
 The output produced by the program will be output [here](./output/image.png).
 
-![Image](./output/image.ppm "Image")
+![Image](./output/image.png "Image")
