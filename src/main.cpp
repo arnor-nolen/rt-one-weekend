@@ -38,8 +38,8 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
     // World.
     auto world = HittableList{};
 
-    world.add<Sphere>(std::make_shared<Sphere>(Point3{0, 0, -1}, 0.5));
-    world.add<Sphere>(std::make_shared<Sphere>(Point3{0, -100.5, -1}, 100));
+    world.add(std::make_shared<Sphere>(Point3{0, 0, -1}, 0.5));
+    world.add(std::make_shared<Sphere>(Point3{0, -100.5, -1}, 100));
 
     constexpr auto focalLength = 1.0;
     constexpr auto viewportHeight = 2.0;
