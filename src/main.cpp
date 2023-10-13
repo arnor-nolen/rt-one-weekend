@@ -9,21 +9,28 @@
 #include <ray.hpp>
 #include <vec3.hpp>
 
-auto hit_sphere(const Point3 &center, double radius, const Ray &ray) -> bool {
+auto hit_sphere(const Point3 &center, double radius, const Ray &ray) -> double {
     auto vec = ray.origin() - center;
 
-    auto quadA = dot(ray.direction(), ray.direction());
-    auto quadB = 2.0 * dot(vec, ray.direction());
-    auto quadC = dot(vec, vec) - radius * radius;
+    auto quadA = ray.direction().length_squared();
+    auto quadH = dot(vec, ray.direction());
+    auto quadC = vec.length_squared() - radius * radius;
 
-    auto discriminant = quadB * quadB - 4 * quadA * quadC;
+    auto discriminant = quadH * quadH - quadA * quadC;
 
-    return discriminant >= 0;
+    if (discriminant < 0) {
+        return -1.0;
+    }
+
+    return (-quadH - sqrt(discriminant)) / quadA;
 }
 
 auto ray_color(const Ray &ray) noexcept -> Color {
-    if (hit_sphere(Point3{0, 0, -1}, 0.5, ray)) {
-        return Color{1, 0, 0};
+    auto rayTime = hit_sphere(Point3{0, 0, -1}, 0.5, ray);
+
+    if (rayTime > 0.0) {
+        Vec3 normal = unit_vector(ray.at(rayTime) - Vec3{0, 0, -1});
+        return 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
     }
 
     Vec3 unitDirection = unit_vector(ray.direction());
