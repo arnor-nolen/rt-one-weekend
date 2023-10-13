@@ -8,8 +8,9 @@ class Sphere : public Hittable<Sphere> {
   public:
     explicit Sphere(Point3 center, double radius) noexcept;
 
-    auto hit(const Ray &ray, double rayTmin, double rayTmax,
-             HitRecord &record) const noexcept -> bool;
+    [[nodiscard]]
+    auto hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
+        -> std::optional<HitRecord>;
 
   private:
     Point3 m_center;

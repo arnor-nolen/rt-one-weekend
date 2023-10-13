@@ -3,8 +3,8 @@
 Sphere::Sphere(Point3 center, double radius) noexcept
     : m_center{center}, m_radius{radius} {};
 
-auto Sphere::hit(const Ray &ray, double rayTmin, double rayTmax,
-                 HitRecord &record) const noexcept -> bool {
+auto Sphere::hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
+    -> std::optional<HitRecord> {
     auto vec = ray.origin() - m_center;
 
     auto quadA = ray.direction().length_squared();
@@ -14,7 +14,7 @@ auto Sphere::hit(const Ray &ray, double rayTmin, double rayTmax,
     auto discriminant = quadH * quadH - quadA * quadC;
 
     if (discriminant < 0) {
-        return false;
+        return std::nullopt;
     }
 
     auto sqrtD = std::sqrt(discriminant);
@@ -23,12 +23,12 @@ auto Sphere::hit(const Ray &ray, double rayTmin, double rayTmax,
     if (root <= rayTmin || rayTmax <= root) {
         root = (-quadH + sqrtD) / quadA;
         if (root <= rayTmin || rayTmax <= root) {
-            return false;
+            return std::nullopt;
         }
     }
 
-    record = {.point = ray.at(root), .time = root};
+    HitRecord record = {.point = ray.at(root), .time = root};
     setFaceNormal(record, ray, (record.point - m_center) / m_radius);
 
-    return true;
+    return record;
 }

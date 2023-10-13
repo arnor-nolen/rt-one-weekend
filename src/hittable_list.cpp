@@ -2,24 +2,23 @@
 
 void HittableList::clear() { m_objects.clear(); }
 
-auto HittableList::hit(const Ray &ray, double rayTmin, double rayTmax,
-                       HitRecord &record) const noexcept -> bool {
-    HitRecord tempRecord;
-
-    bool hitAnything = false;
+auto HittableList::hit(const Ray &ray, double rayTmin,
+                       double rayTmax) const noexcept
+    -> std::optional<HitRecord> {
+    auto record = std::optional<HitRecord>{};
     auto closestSoFar = rayTmax;
 
     for (const auto &elem : m_objects) {
         std::visit(
             [&](const auto &object) {
-                if (object->hit(ray, rayTmin, closestSoFar, tempRecord)) {
-                    hitAnything = true;
-                    closestSoFar = tempRecord.time;
-                    record = tempRecord;
+                auto tempRecord = object->hit(ray, rayTmin, closestSoFar);
+                if (tempRecord) {
+                    closestSoFar = tempRecord->time;
+                    record = *tempRecord;
                 }
             },
             elem);
     }
 
-    return hitAnything;
+    return record;
 }

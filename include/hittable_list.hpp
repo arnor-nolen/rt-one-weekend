@@ -26,8 +26,9 @@ class HittableList : public Hittable<HittableList> {
         m_objects.push_back(std::move(object));
     }
 
-    auto hit(const Ray &ray, double rayTmin, double rayTmax,
-             HitRecord &record) const noexcept -> bool;
+    [[nodiscard]]
+    auto hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
+        -> std::optional<HitRecord>;
 
   private:
     using HittableVariant =

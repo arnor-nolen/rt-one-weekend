@@ -13,9 +13,9 @@
 
 template <typename T>
 auto ray_color(const Ray &ray, const Hittable<T> &world) noexcept -> Color {
-    HitRecord record;
-    if (world.hit(ray, 0, s_infinity, record)) {
-        return 0.5 * (record.normal + Color{1, 1, 1});
+    auto record = world.hit(ray, 0, s_infinity);
+    if (record) {
+        return 0.5 * (record->normal + Color{1, 1, 1});
     }
 
     // Color background.

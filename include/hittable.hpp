@@ -1,15 +1,18 @@
 #ifndef HITTABLE_HPP
 #define HITTABLE_HPP
 
+#include <optional>
+
 #include <hit_record.hpp>
 #include <ray.hpp>
 
 template <typename T>
 class Hittable {
   public:
-    auto hit(const Ray &ray, double rayTmin, double rayTmax,
-             HitRecord &record) const noexcept -> bool {
-        return underlying().hit(ray, rayTmin, rayTmax, record);
+    [[nodiscard]]
+    auto hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
+        -> std::optional<HitRecord> {
+        return underlying().hit(ray, rayTmin, rayTmax);
     }
 
     [[nodiscard]]
