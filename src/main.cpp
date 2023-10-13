@@ -5,34 +5,20 @@
 #include <fmt/format.h>
 #include <impls/cimg.hpp>
 
+#include <rtweekend.hpp>
+
 #include <color.hpp>
-#include <ray.hpp>
-#include <vec3.hpp>
+#include <hittable_list.hpp>
+#include <sphere.hpp>
 
-auto hit_sphere(const Point3 &center, double radius, const Ray &ray) -> double {
-    auto vec = ray.origin() - center;
-
-    auto quadA = ray.direction().length_squared();
-    auto quadH = dot(vec, ray.direction());
-    auto quadC = vec.length_squared() - radius * radius;
-
-    auto discriminant = quadH * quadH - quadA * quadC;
-
-    if (discriminant < 0) {
-        return -1.0;
+template <typename T>
+auto ray_color(const Ray &ray, const Hittable<T> &world) noexcept -> Color {
+    HitRecord record;
+    if (world.hit(ray, 0, s_infinity, record)) {
+        return 0.5 * (record.normal + Color{1, 1, 1});
     }
 
-    return (-quadH - sqrt(discriminant)) / quadA;
-}
-
-auto ray_color(const Ray &ray) noexcept -> Color {
-    auto rayTime = hit_sphere(Point3{0, 0, -1}, 0.5, ray);
-
-    if (rayTime > 0.0) {
-        Vec3 normal = unit_vector(ray.at(rayTime) - Vec3{0, 0, -1});
-        return 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
-    }
-
+    // Color background.
     Vec3 unitDirection = unit_vector(ray.direction());
     const auto currentValue = 0.5 * (unitDirection.y() + 1.0);
 
@@ -48,6 +34,12 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
 
     auto imageHeight = static_cast<size_t>(imageWidth / aspectRatio);
     imageHeight = (imageHeight < 1) ? 1 : imageHeight;
+
+    // World.
+    auto world = HittableList{};
+
+    world.add<Sphere>(std::make_shared<Sphere>(Point3{0, 0, -1}, 0.5));
+    world.add<Sphere>(std::make_shared<Sphere>(Point3{0, -100.5, -1}, 100));
 
     constexpr auto focalLength = 1.0;
     constexpr auto viewportHeight = 2.0;
@@ -81,7 +73,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
             auto rayDirection = pixelCenter - cameraCenter;
             auto ray = Ray{cameraCenter, rayDirection};
 
-            auto pixelColor = convert_color(ray_color(ray));
+            auto pixelColor = convert_color(ray_color(ray, world));
 
             auto colorArray =
                 std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.x()),

@@ -67,11 +67,11 @@ inline auto operator*(const Vec3 &lhs, const Vec3 &rhs) noexcept -> Vec3 {
     return Vec3{lhs[0] * rhs[0], lhs[1] * rhs[1], lhs[2] * rhs[2]};
 }
 
-inline auto operator*(double multiplier, const Vec3 &vec) -> Vec3 {
+inline auto operator*(double multiplier, const Vec3 &vec) noexcept -> Vec3 {
     return Vec3{multiplier * vec[0], multiplier * vec[1], multiplier * vec[2]};
 }
 
-inline auto operator*(const Vec3 &vec, double multiplier) -> Vec3 {
+inline auto operator*(const Vec3 &vec, double multiplier) noexcept -> Vec3 {
     return multiplier * vec;
 }
 
@@ -79,11 +79,11 @@ inline auto operator/(const Vec3 &vec, double multiplier) -> Vec3 {
     return (1 / multiplier) * vec;
 }
 
-inline auto dot(const Vec3 &lhs, const Vec3 &rhs) -> double {
+inline auto dot(const Vec3 &lhs, const Vec3 &rhs) noexcept -> double {
     return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
 }
 
-inline auto cross(const Vec3 &lhs, const Vec3 &rhs) -> Vec3 {
+inline auto cross(const Vec3 &lhs, const Vec3 &rhs) noexcept -> Vec3 {
     return Vec3{lhs[1] * rhs[2] - lhs[2] * rhs[1],
                 lhs[2] * rhs[0] - lhs[0] * rhs[2],
                 lhs[0] * rhs[1] - lhs[1] * rhs[0]};
