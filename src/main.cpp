@@ -12,14 +12,14 @@
 #include <sphere.hpp>
 
 auto ray_color(const Ray &ray, const CHittable auto &world) noexcept -> Color {
-    auto record = world.hit(ray, 0, s_infinity);
+    auto record = world.hit(ray, Interval{0, s_infinity});
     if (record) {
         return 0.5 * (record->normal + Color{1, 1, 1});
     }
 
     // Color background.
     Vec3 unitDirection = unit_vector(ray.direction());
-    const auto currentValue = 0.5 * (unitDirection.y() + 1.0);
+    const auto currentValue = 0.5 * (unitDirection.getY() + 1.0);
 
     return (1.0 - currentValue) * Color{1.0, 1.0, 1.0} +
            currentValue * Color{0.5, 0.7, 1.0};
@@ -75,9 +75,9 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
             auto pixelColor = convert_color(ray_color(ray, world));
 
             auto colorArray =
-                std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.x()),
-                                       static_cast<uint8_t>(pixelColor.y()),
-                                       static_cast<uint8_t>(pixelColor.z())};
+                std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.getX()),
+                                       static_cast<uint8_t>(pixelColor.getY()),
+                                       static_cast<uint8_t>(pixelColor.getZ())};
 
             image.draw_point(static_cast<int>(i), static_cast<int>(j),
                              colorArray.data());

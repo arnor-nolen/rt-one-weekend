@@ -10,6 +10,8 @@
 
 #include <sphere.hpp>
 
+class Interval;
+
 class HittableList {
   public:
     explicit HittableList() = default;
@@ -27,7 +29,7 @@ class HittableList {
     }
 
     [[nodiscard]]
-    auto hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
+    auto hit(const Ray &ray, Interval rayT) const noexcept
         -> std::optional<HitRecord>;
 
   private:

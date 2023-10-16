@@ -6,12 +6,13 @@
 #include <utility>
 
 #include <hit_record.hpp>
+#include <interval.hpp>
 #include <ray.hpp>
 
 template <typename H>
-concept CHittable = requires(const Ray &ray, double rayTmin, double rayTmax) {
+concept CHittable = requires(const Ray &ray, Interval rayT) {
     {
-        std::declval<const H>().hit(ray, rayTmin, rayTmax)
+        std::declval<const H>().hit(ray, rayT)
     } noexcept -> std::same_as<std::optional<HitRecord>>;
 };
 

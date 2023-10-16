@@ -1,17 +1,19 @@
 #include <hittable_list.hpp>
 
+#include <interval.hpp>
+
 void HittableList::clear() { m_objects.clear(); }
 
-auto HittableList::hit(const Ray &ray, double rayTmin,
-                       double rayTmax) const noexcept
+auto HittableList::hit(const Ray &ray, Interval rayT) const noexcept
     -> std::optional<HitRecord> {
     auto record = std::optional<HitRecord>{};
-    auto closestSoFar = rayTmax;
+    auto closestSoFar = rayT.getMax();
 
     for (const auto &elem : m_objects) {
         std::visit(
             [&](const auto &object) {
-                auto tempRecord = object->hit(ray, rayTmin, closestSoFar);
+                auto tempRecord =
+                    object->hit(ray, Interval{rayT.getMin(), closestSoFar});
                 if (tempRecord) {
                     closestSoFar = tempRecord->time;
                     record = *tempRecord;

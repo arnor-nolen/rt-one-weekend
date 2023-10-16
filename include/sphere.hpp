@@ -4,12 +4,14 @@
 #include <hittable.hpp>
 #include <vec3.hpp>
 
+class Interval;
+
 class Sphere {
   public:
     explicit Sphere(Point3 center, double radius) noexcept;
 
     [[nodiscard]]
-    auto hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
+    auto hit(const Ray &ray, Interval rayT) const noexcept
         -> std::optional<HitRecord>;
 
   private:

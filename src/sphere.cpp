@@ -1,9 +1,11 @@
 #include <sphere.hpp>
 
+#include <interval.hpp>
+
 Sphere::Sphere(Point3 center, double radius) noexcept
     : m_center{center}, m_radius{radius} {};
 
-auto Sphere::hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
+auto Sphere::hit(const Ray &ray, Interval rayT) const noexcept
     -> std::optional<HitRecord> {
     auto vec = ray.origin() - m_center;
 
@@ -20,9 +22,9 @@ auto Sphere::hit(const Ray &ray, double rayTmin, double rayTmax) const noexcept
     auto sqrtD = std::sqrt(discriminant);
 
     auto root = (-quadH - sqrtD) / quadA;
-    if (root <= rayTmin || rayTmax <= root) {
+    if (!rayT.surrounds(root)) {
         root = (-quadH + sqrtD) / quadA;
-        if (root <= rayTmin || rayTmax <= root) {
+        if (!rayT.surrounds(root)) {
             return std::nullopt;
         }
     }

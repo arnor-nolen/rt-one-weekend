@@ -13,13 +13,13 @@ class Vec3 {
     explicit Vec3(double value0, double value1, double value2) noexcept;
 
     [[nodiscard]]
-    auto x() const noexcept -> double;
+    auto getX() const noexcept -> double;
 
     [[nodiscard]]
-    auto y() const noexcept -> double;
+    auto getY() const noexcept -> double;
 
     [[nodiscard]]
-    auto z() const noexcept -> double;
+    auto getZ() const noexcept -> double;
 
     auto operator-() const noexcept -> Vec3;
 
