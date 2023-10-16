@@ -11,8 +11,7 @@
 #include <hittable_list.hpp>
 #include <sphere.hpp>
 
-template <typename T>
-auto ray_color(const Ray &ray, const Hittable<T> &world) noexcept -> Color {
+auto ray_color(const Ray &ray, const CHittable auto &world) noexcept -> Color {
     auto record = world.hit(ray, 0, s_infinity);
     if (record) {
         return 0.5 * (record->normal + Color{1, 1, 1});

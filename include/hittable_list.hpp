@@ -10,18 +10,18 @@
 
 #include <sphere.hpp>
 
-class HittableList : public Hittable<HittableList> {
+class HittableList {
   public:
     explicit HittableList() = default;
 
-    template <typename T>
+    template <CHittable T>
     explicit HittableList(std::shared_ptr<T> object) {
         add(std::move(object));
     }
 
     void clear();
 
-    template <typename T>
+    template <CHittable T>
     void add(std::shared_ptr<T> object) {
         m_objects.push_back(std::move(object));
     }
@@ -36,5 +36,7 @@ class HittableList : public Hittable<HittableList> {
 
     std::vector<HittableVariant> m_objects{};
 };
+
+static_assert(CHittable<HittableList>);
 
 #endif

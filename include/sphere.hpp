@@ -4,7 +4,7 @@
 #include <hittable.hpp>
 #include <vec3.hpp>
 
-class Sphere : public Hittable<Sphere> {
+class Sphere {
   public:
     explicit Sphere(Point3 center, double radius) noexcept;
 
@@ -16,5 +16,7 @@ class Sphere : public Hittable<Sphere> {
     Point3 m_center;
     double m_radius;
 };
+
+static_assert(CHittable<Sphere>);
 
 #endif
