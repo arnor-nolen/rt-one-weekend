@@ -88,6 +88,7 @@ set(SOURCE_FILES
     "src/hit_record.cpp" 
     "src/hittable_list.cpp"
     "src/interval.cpp"
+    "src/camera.cpp"
     )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

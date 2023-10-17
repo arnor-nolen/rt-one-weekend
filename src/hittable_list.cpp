@@ -6,6 +6,7 @@ void HittableList::clear() { m_objects.clear(); }
 
 auto HittableList::hit(const Ray &ray, Interval rayT) const noexcept
     -> std::optional<HitRecord> {
+
     auto record = std::optional<HitRecord>{};
     auto closestSoFar = rayT.getMax();
 
