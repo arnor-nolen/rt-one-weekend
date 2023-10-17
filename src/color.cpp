@@ -4,7 +4,7 @@
 
 namespace {
 
-constexpr auto s_maxColorValue = 255.999;
+constexpr auto s_maxColorValue = 256;
 
 } // namespace
 
@@ -14,7 +14,7 @@ auto convert_color(const Color &color, size_t samplesPerPixel) noexcept
 
     auto scale = 1.0 / static_cast<double>(samplesPerPixel);
 
-    return Color{s_maxColorValue * intensity.clamp(color[0] * scale),
-                 s_maxColorValue * intensity.clamp(color[1] * scale),
-                 s_maxColorValue * intensity.clamp(color[2] * scale)};
+    return Color{s_maxColorValue * scale * intensity.clamp(color[0]),
+                 s_maxColorValue * scale * intensity.clamp(color[1]),
+                 s_maxColorValue * scale * intensity.clamp(color[2])};
 }
