@@ -14,6 +14,18 @@ auto Interval::surrounds(double value) const noexcept -> bool {
     return m_min < value && value < m_max;
 }
 
+auto Interval::clamp(double value) const noexcept -> double {
+    if (value < m_min) {
+        return m_min;
+    }
+
+    if (value > m_max) {
+        return m_max;
+    }
+
+    return value;
+}
+
 auto Interval::getMin() const noexcept -> double { return m_min; }
 auto Interval::getMax() const noexcept -> double { return m_max; }
 

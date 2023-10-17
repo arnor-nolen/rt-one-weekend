@@ -7,7 +7,7 @@
 
 using Color = Vec3;
 
-auto convert_color(const Color &color) noexcept -> Color;
-void write_color(FILE *descriptor, Color color);
+auto convert_color(const Color &color, size_t samplesPerPixel) noexcept
+    -> Color;
 
 #endif

@@ -16,6 +16,9 @@ class Interval {
     auto surrounds(double value) const noexcept -> bool;
 
     [[nodiscard]]
+    auto clamp(double value) const noexcept -> double;
+
+    [[nodiscard]]
     auto getMin() const noexcept -> double;
 
     [[nodiscard]]

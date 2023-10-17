@@ -15,21 +15,21 @@
 class Camera {
   public:
     explicit Camera(std::string_view outputPath, double aspectRatio = 1.0,
-                    size_t imageWidth = 100);
+                    size_t imageWidth = 100, size_t samplesPerPixel = 10);
 
     void render(const CHittable auto &world) {
 
         for (size_t j = 0; j < m_imageHeight; ++j) {
             fmt::print("Scanlines remaining: {}.\n", m_imageHeight - j);
+
             for (size_t i = 0; i < m_imageWidth; ++i) {
-                auto pixelCenter = m_pixel00Loc +
-                                   (static_cast<double>(i) * m_pixelDeltaU) +
-                                   (static_cast<double>(j) * m_pixelDeltaV);
+                auto pixelColor = Color{0, 0, 0};
 
-                auto rayDirection = pixelCenter - m_cameraCenter;
-                auto ray = Ray{m_cameraCenter, rayDirection};
-
-                auto pixelColor = convert_color(ray_color(ray, world));
+                for (size_t sample = 0; sample < m_samplesPerPixel; ++sample) {
+                    auto ray = get_ray(i, j);
+                    pixelColor +=
+                        convert_color(ray_color(ray, world), m_samplesPerPixel);
+                }
 
                 auto colorArray = std::array<uint8_t, 3>{
                     static_cast<uint8_t>(pixelColor.getX()),
@@ -66,6 +66,27 @@ class Camera {
                currentValue * Color{0.5, 0.7, 1.0};
     }
 
+    [[nodiscard]]
+    auto get_ray(size_t iCoord, size_t jCoord) const -> Ray {
+        auto pixelCenter = m_pixel00Loc +
+                           (static_cast<double>(iCoord) * m_pixelDeltaU) +
+                           (static_cast<double>(jCoord) * m_pixelDeltaV);
+        auto pixelSample = pixelCenter + pixel_sample_square();
+
+        auto rayOrigin = m_cameraCenter;
+        auto rayDirection = pixelSample - rayOrigin;
+
+        return Ray{rayOrigin, rayDirection};
+    }
+
+    [[nodiscard]]
+    auto pixel_sample_square() const -> Vec3 {
+        auto pointX = -0.5 + random_double();
+        auto pointY = -0.5 + random_double();
+
+        return (pointX * m_pixelDeltaU) + (pointY * m_pixelDeltaV);
+    }
+
     double m_aspectRatio;
     size_t m_imageWidth;
 
@@ -75,6 +96,8 @@ class Camera {
 
     Vec3 m_pixelDeltaU{};
     Vec3 m_pixelDeltaV{};
+
+    size_t m_samplesPerPixel{};
 
     cimg_library::CImg<uint8_t> m_image{};
 

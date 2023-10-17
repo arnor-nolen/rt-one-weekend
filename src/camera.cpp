@@ -1,9 +1,9 @@
 #include <camera.hpp>
 
 Camera::Camera(std::string_view outputPath, double aspectRatio,
-               size_t imageWidth)
+               size_t imageWidth, size_t samplesPerPixel)
     : m_aspectRatio{aspectRatio}, m_imageWidth{imageWidth},
-      m_outputPath{outputPath} {
+      m_samplesPerPixel{samplesPerPixel}, m_outputPath{outputPath} {
     initialize();
 }
 

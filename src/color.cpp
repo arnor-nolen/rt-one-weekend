@@ -1,21 +1,20 @@
 #include <color.hpp>
 
+#include <interval.hpp>
+
 namespace {
 
 constexpr auto s_maxColorValue = 255.999;
 
 } // namespace
 
-auto convert_color(const Color &color) noexcept -> Color {
-    return Color{s_maxColorValue * color[0], s_maxColorValue * color[1],
-                 s_maxColorValue * color[2]};
-}
+auto convert_color(const Color &color, size_t samplesPerPixel) noexcept
+    -> Color {
+    static const auto intensity = Interval{0.0, 0.999};
 
-void write_color(FILE *descriptor, Color color) {
-    auto converted = convert_color(color);
+    auto scale = 1.0 / static_cast<double>(samplesPerPixel);
 
-    fmt::print(descriptor, "{} {} {}\n",
-               static_cast<unsigned int>(converted[0]),
-               static_cast<unsigned int>(converted[1]),
-               static_cast<unsigned int>(converted[2]));
+    return Color{s_maxColorValue * intensity.clamp(color[0] * scale),
+                 s_maxColorValue * intensity.clamp(color[1] * scale),
+                 s_maxColorValue * intensity.clamp(color[2] * scale)};
 }
