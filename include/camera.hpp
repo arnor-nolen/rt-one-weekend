@@ -26,9 +26,9 @@ class Camera {
                 auto pixelColor = Color{0, 0, 0};
 
                 for (size_t sample = 0; sample < m_samplesPerPixel; ++sample) {
-                    auto ray = get_ray(i, j);
+                    auto ray = getRay(i, j);
                     pixelColor +=
-                        convert_color(ray_color(ray, world), m_samplesPerPixel);
+                        convertColor(rayColor(ray, world), m_samplesPerPixel);
                 }
 
                 auto colorArray = std::array<uint8_t, 3>{
@@ -51,7 +51,7 @@ class Camera {
   private:
     void initialize();
 
-    auto ray_color(const Ray &ray, const CHittable auto &world) const -> Color {
+    auto rayColor(const Ray &ray, const CHittable auto &world) const -> Color {
 
         auto record = world.hit(ray, Interval{0, s_infinity});
         if (record) {
@@ -59,7 +59,7 @@ class Camera {
         }
 
         // Color background.
-        Vec3 unitDirection = unit_vector(ray.direction());
+        Vec3 unitDirection = unitVector(ray.direction());
         const auto currentValue = 0.5 * (unitDirection.getY() + 1.0);
 
         return (1.0 - currentValue) * Color{1.0, 1.0, 1.0} +
@@ -67,11 +67,11 @@ class Camera {
     }
 
     [[nodiscard]]
-    auto get_ray(size_t iCoord, size_t jCoord) const -> Ray {
+    auto getRay(size_t iCoord, size_t jCoord) const -> Ray {
         auto pixelCenter = m_pixel00Loc +
                            (static_cast<double>(iCoord) * m_pixelDeltaU) +
                            (static_cast<double>(jCoord) * m_pixelDeltaV);
-        auto pixelSample = pixelCenter + pixel_sample_square();
+        auto pixelSample = pixelCenter + pixelSampleSquare();
 
         auto rayOrigin = m_cameraCenter;
         auto rayDirection = pixelSample - rayOrigin;
@@ -80,9 +80,9 @@ class Camera {
     }
 
     [[nodiscard]]
-    auto pixel_sample_square() const -> Vec3 {
-        auto pointX = -0.5 + random_double();
-        auto pointY = -0.5 + random_double();
+    auto pixelSampleSquare() const -> Vec3 {
+        auto pointX = -0.5 + randomDouble();
+        auto pointY = -0.5 + randomDouble();
 
         return (pointX * m_pixelDeltaU) + (pointY * m_pixelDeltaV);
     }

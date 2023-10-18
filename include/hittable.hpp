@@ -13,7 +13,7 @@ template <typename H>
 concept CHittable = requires(const Ray &ray, Interval rayT) {
     {
         std::declval<const H>().hit(ray, rayT)
-    } noexcept -> std::same_as<std::optional<HitRecord>>;
+    } -> std::same_as<std::optional<HitRecord>>;
 };
 
 #endif

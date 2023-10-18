@@ -50,9 +50,9 @@ auto Vec3::operator*=(double multiplier) noexcept -> Vec3 & {
 
 auto Vec3::operator/=(double divisor) -> Vec3 & { return *this *= 1 / divisor; }
 
-auto Vec3::length() const -> double { return std::sqrt(length_squared()); }
+auto Vec3::length() const -> double { return std::sqrt(lengthSquared()); }
 
-auto Vec3::length_squared() const noexcept -> double {
+auto Vec3::lengthSquared() const noexcept -> double {
     return m_vec[0] * m_vec[0] + m_vec[1] * m_vec[1] + m_vec[2] * m_vec[2];
 }
 

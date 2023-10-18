@@ -2,16 +2,16 @@
 
 #include <interval.hpp>
 
-Sphere::Sphere(Point3 center, double radius) noexcept
+Sphere::Sphere(const Point3 &center, double radius) noexcept
     : m_center{center}, m_radius{radius} {};
 
 auto Sphere::hit(const Ray &ray, Interval rayT) const noexcept
     -> std::optional<HitRecord> {
     auto vec = ray.origin() - m_center;
 
-    auto quadA = ray.direction().length_squared();
+    auto quadA = ray.direction().lengthSquared();
     auto quadH = dot(vec, ray.direction());
-    auto quadC = vec.length_squared() - m_radius * m_radius;
+    auto quadC = vec.lengthSquared() - m_radius * m_radius;
 
     auto discriminant = quadH * quadH - quadA * quadC;
 

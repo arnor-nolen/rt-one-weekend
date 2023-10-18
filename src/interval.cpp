@@ -29,5 +29,5 @@ auto Interval::clamp(double value) const noexcept -> double {
 auto Interval::getMin() const noexcept -> double { return m_min; }
 auto Interval::getMax() const noexcept -> double { return m_max; }
 
-const static Interval empty{+s_infinity, -s_infinity};
-const static Interval universe{-s_infinity, +s_infinity};
+const static Interval s_empty{+s_infinity, -s_infinity};
+const static Interval s_universe{-s_infinity, +s_infinity};

@@ -7,7 +7,6 @@
 
 using Color = Vec3;
 
-auto convert_color(const Color &color, size_t samplesPerPixel) noexcept
-    -> Color;
+auto convertColor(const Color &color, size_t samplesPerPixel) noexcept -> Color;
 
 #endif

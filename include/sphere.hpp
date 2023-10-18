@@ -8,7 +8,7 @@ class Interval;
 
 class Sphere {
   public:
-    explicit Sphere(Point3 center, double radius) noexcept;
+    explicit Sphere(const Point3 &center, double radius) noexcept;
 
     [[nodiscard]]
     auto hit(const Ray &ray, Interval rayT) const noexcept

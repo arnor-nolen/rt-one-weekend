@@ -29,8 +29,7 @@ class HittableList {
     }
 
     [[nodiscard]]
-    auto hit(const Ray &ray, Interval rayT) const noexcept
-        -> std::optional<HitRecord>;
+    auto hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>;
 
   private:
     using HittableVariant =

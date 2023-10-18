@@ -3,8 +3,8 @@
 
 class Interval {
   public:
-    static const Interval empty;
-    static const Interval universe;
+    static const Interval s_empty;
+    static const Interval s_universe;
 
     explicit Interval() noexcept;
     explicit Interval(double min, double max) noexcept;
