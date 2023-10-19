@@ -36,6 +36,12 @@ class Vec3 {
     [[nodiscard]]
     auto lengthSquared() const noexcept -> double;
 
+    [[nodiscard]]
+    static auto random() noexcept -> Vec3;
+
+    [[nodiscard]]
+    static auto random(double min, double max) noexcept -> Vec3;
+
   private:
     std::array<double, 3> m_vec;
 };
@@ -90,5 +96,28 @@ inline auto cross(const Vec3 &lhs, const Vec3 &rhs) noexcept -> Vec3 {
 }
 
 inline auto unitVector(const Vec3 &vec) -> Vec3 { return vec / vec.length(); }
+
+inline auto randomInUnitSphere() noexcept -> Vec3 {
+    while (true) {
+        auto point = Vec3::random(-1, 1);
+        if (point.lengthSquared() < 1) {
+            return point;
+        }
+    }
+}
+
+inline auto randomUnitVector() -> Vec3 {
+    return unitVector(randomInUnitSphere());
+}
+
+inline auto randomOnHemisphere(const Vec3 &normal) -> Vec3 {
+    auto onUnitSphere = randomUnitVector();
+
+    if (dot(onUnitSphere, normal) > 0.0) {
+        return onUnitSphere;
+    }
+
+    return -onUnitSphere;
+}
 
 #endif

@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cmath>
 
+#include <rtweekend.hpp>
+
 Vec3::Vec3() noexcept : m_vec{0, 0, 0} {}
 
 Vec3::Vec3(double value0, double value1, double value2) noexcept
@@ -54,6 +56,15 @@ auto Vec3::length() const -> double { return std::sqrt(lengthSquared()); }
 
 auto Vec3::lengthSquared() const noexcept -> double {
     return m_vec[0] * m_vec[0] + m_vec[1] * m_vec[1] + m_vec[2] * m_vec[2];
+}
+
+auto Vec3::random() noexcept -> Vec3 {
+    return Vec3{randomDouble(), randomDouble(), randomDouble()};
+}
+
+auto Vec3::random(double min, double max) noexcept -> Vec3 {
+    return Vec3{randomDouble(min, max), randomDouble(min, max),
+                randomDouble(min, max)};
 }
 
 constexpr auto fmt::formatter<Vec3>::parse(fmt::format_parse_context &ctx) {

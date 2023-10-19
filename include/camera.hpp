@@ -12,23 +12,32 @@
 #include <hittable.hpp>
 #include <sphere.hpp>
 
+struct CameraProps {
+    std::filesystem::path outputPath;
+    double aspectRatio = 1.0;
+    size_t imageWidth = 100;
+    size_t samplesPerPixel = 10;
+    size_t maxDepth = 10;
+};
+
 class Camera {
   public:
-    explicit Camera(std::string_view outputPath, double aspectRatio = 1.0,
-                    size_t imageWidth = 100, size_t samplesPerPixel = 10);
+    explicit Camera(CameraProps cameraProps);
 
     void render(const CHittable auto &world) {
 
         for (size_t j = 0; j < m_imageHeight; ++j) {
             fmt::print("Scanlines remaining: {}.\n", m_imageHeight - j);
 
-            for (size_t i = 0; i < m_imageWidth; ++i) {
+            for (size_t i = 0; i < m_cameraProps.imageWidth; ++i) {
                 auto pixelColor = Color{0, 0, 0};
 
-                for (size_t sample = 0; sample < m_samplesPerPixel; ++sample) {
+                for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel;
+                     ++sample) {
                     auto ray = getRay(i, j);
-                    pixelColor +=
-                        convertColor(rayColor(ray, world), m_samplesPerPixel);
+                    pixelColor += convertColor(
+                        rayColor(ray, m_cameraProps.maxDepth, world),
+                        m_cameraProps.samplesPerPixel);
                 }
 
                 auto colorArray = std::array<uint8_t, 3>{
@@ -43,19 +52,28 @@ class Camera {
 
         // Windows doesn't play nicely with save_png and
         // std::filesystem, so we have to convert twice.
-        m_image.save_png(m_outputPath.string().c_str());
+        m_image.save_png(m_cameraProps.outputPath.string().c_str());
 
-        fmt::print("\nImage saved to \"{}\".\n", m_outputPath.string());
+        fmt::print("\nImage saved to \"{}\".\n",
+                   m_cameraProps.outputPath.string());
     }
 
   private:
     void initialize();
 
-    auto rayColor(const Ray &ray, const CHittable auto &world) const -> Color {
+    auto rayColor(const Ray &ray, size_t depth,
+                  const CHittable auto &world) const -> Color {
 
-        auto record = world.hit(ray, Interval{0, s_infinity});
+        if (depth == 0) {
+            return Color{0, 0, 0};
+        }
+
+        const auto record = world.hit(ray, Interval{0, s_infinity});
+
         if (record) {
-            return 0.5 * (record->normal + Color{1, 1, 1});
+            const auto direction = randomOnHemisphere(record->normal);
+            return 0.5 *
+                   rayColor(Ray{record->point, direction}, depth - 1, world);
         }
 
         // Color background.
@@ -87,8 +105,7 @@ class Camera {
         return (pointX * m_pixelDeltaU) + (pointY * m_pixelDeltaV);
     }
 
-    double m_aspectRatio;
-    size_t m_imageWidth;
+    CameraProps m_cameraProps{};
 
     size_t m_imageHeight{};
     Point3 m_cameraCenter{};
@@ -97,11 +114,7 @@ class Camera {
     Vec3 m_pixelDeltaU{};
     Vec3 m_pixelDeltaV{};
 
-    size_t m_samplesPerPixel{};
-
     cimg_library::CImg<uint8_t> m_image{};
-
-    std::filesystem::path m_outputPath{};
 };
 
 #endif
