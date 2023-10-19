@@ -5,19 +5,36 @@
 #include <rtweekend.hpp>
 
 #include <camera.hpp>
+#include <color.hpp>
 #include <hittable_list.hpp>
+#include <material.hpp>
 
 auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
 
-    constexpr static auto s_aspectRatio = 16.0 / 9.0;
-    constexpr static size_t s_imageWidth = 400u;
-    constexpr static size_t s_samplesPerPixel = 100u;
-    constexpr static size_t s_maxDepth = 50u;
+    static constexpr auto s_aspectRatio = 16.0 / 9.0;
+    static constexpr size_t s_imageWidth = 400u;
+    static constexpr size_t s_samplesPerPixel = 100u;
+    static constexpr size_t s_maxDepth = 50u;
 
     auto world = HittableList{};
 
-    world.add(std::make_shared<Sphere>(Point3{0, 0, -1}, 0.5));
-    world.add(std::make_shared<Sphere>(Point3{0, -100.5, -1}, 100));
+    auto materialGround =
+        MaterialVariant{std::in_place_type<Lambertian>, Color{0.8, 0.8, 0.0}};
+    auto materialCenter =
+        MaterialVariant{std::in_place_type<Lambertian>, Color{0.7, 0.3, 0.3}};
+    auto materialLeft =
+        MaterialVariant{std::in_place_type<Metal>, Color{0.8, 0.8, 0.8}, 0.3};
+    auto materialRight =
+        MaterialVariant{std::in_place_type<Metal>, Color{0.8, 0.6, 0.2}, 1.0};
+
+    world.add(std::make_shared<Sphere>(Point3{0.0, -100.5, -1.0}, 100.0,
+                                       materialGround));
+    world.add(
+        std::make_shared<Sphere>(Point3{0.0, 0.0, -1.0}, 0.5, materialCenter));
+    world.add(
+        std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5, materialLeft));
+    world.add(
+        std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, materialRight));
 
     auto cameraProps = CameraProps{.outputPath = "output/image.png",
                                    .aspectRatio = s_aspectRatio,

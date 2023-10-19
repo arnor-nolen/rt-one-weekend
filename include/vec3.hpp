@@ -42,6 +42,9 @@ class Vec3 {
     [[nodiscard]]
     static auto random(double min, double max) noexcept -> Vec3;
 
+    [[nodiscard]]
+    auto nearZero() const -> bool;
+
   private:
     std::array<double, 3> m_vec;
 };
@@ -119,5 +122,8 @@ inline auto randomOnHemisphere(const Vec3 &normal) -> Vec3 {
 
     return -onUnitSphere;
 }
+
+[[nodiscard]]
+auto reflect(const Vec3 &vector, const Vec3 &normal) -> Vec3;
 
 #endif

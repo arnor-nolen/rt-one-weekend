@@ -2,8 +2,9 @@
 
 #include <interval.hpp>
 
-Sphere::Sphere(const Point3 &center, double radius) noexcept
-    : m_center{center}, m_radius{radius} {};
+Sphere::Sphere(const Point3 &center, double radius,
+               MaterialVariant material) noexcept
+    : m_center{center}, m_radius{radius}, m_material{material} {};
 
 auto Sphere::hit(const Ray &ray, Interval rayT) const noexcept
     -> std::optional<HitRecord> {
@@ -29,7 +30,8 @@ auto Sphere::hit(const Ray &ray, Interval rayT) const noexcept
         }
     }
 
-    HitRecord record = {.point = ray.at(root), .time = root};
+    HitRecord record = {
+        .point = ray.at(root), .material = m_material, .time = root};
     setFaceNormal(record, ray, (record.point - m_center) / m_radius);
 
     return record;

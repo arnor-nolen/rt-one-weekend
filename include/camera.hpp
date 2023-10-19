@@ -10,6 +10,7 @@
 
 #include <color.hpp>
 #include <hittable.hpp>
+#include <material.hpp>
 #include <sphere.hpp>
 
 struct CameraProps {
@@ -68,12 +69,20 @@ class Camera {
             return Color{0, 0, 0};
         }
 
-        const auto record = world.hit(ray, Interval{0.001, s_infinity});
+        if (const auto record = world.hit(ray, Interval{0.001, s_infinity})) {
 
-        if (record) {
-            const auto direction = record->normal + randomUnitVector();
-            return 0.5 *
-                   rayColor(Ray{record->point, direction}, depth - 1, world);
+            const auto scatterInfo = std::visit(
+                [&](const CMaterial auto &elem) {
+                    return elem.scatter(ray, *record);
+                },
+                record->material);
+
+            if (scatterInfo) {
+                return scatterInfo->attenuation *
+                       rayColor(scatterInfo->scattered, depth - 1, world);
+            }
+
+            return Color{0, 0, 0};
         }
 
         // Color background.

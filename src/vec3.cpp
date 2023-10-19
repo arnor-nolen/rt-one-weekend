@@ -67,6 +67,17 @@ auto Vec3::random(double min, double max) noexcept -> Vec3 {
                 randomDouble(min, max)};
 }
 
+auto Vec3::nearZero() const -> bool {
+    static constexpr auto s_epsilon = 1e-8;
+    return (std::fabs(m_vec[0]) < s_epsilon) &&
+           (std ::fabs(m_vec[1]) < s_epsilon) &&
+           (std::fabs(m_vec[2]) < s_epsilon);
+}
+
 constexpr auto fmt::formatter<Vec3>::parse(fmt::format_parse_context &ctx) {
     return ctx.begin();
+}
+
+auto reflect(const Vec3 &vector, const Vec3 &normal) -> Vec3 {
+    return vector - 2 * dot(vector, normal) * normal;
 }
