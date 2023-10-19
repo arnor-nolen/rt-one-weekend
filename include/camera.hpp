@@ -71,7 +71,7 @@ class Camera {
         const auto record = world.hit(ray, Interval{0.001, s_infinity});
 
         if (record) {
-            const auto direction = randomOnHemisphere(record->normal);
+            const auto direction = record->normal + randomUnitVector();
             return 0.5 *
                    rayColor(Ray{record->point, direction}, depth - 1, world);
         }

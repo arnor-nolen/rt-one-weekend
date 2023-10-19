@@ -14,7 +14,8 @@ auto convertColor(const Color &color, size_t samplesPerPixel) noexcept
 
     auto scale = 1.0 / static_cast<double>(samplesPerPixel);
 
-    return Color{s_maxColorValue * scale * s_intensity.clamp(color[0]),
-                 s_maxColorValue * scale * s_intensity.clamp(color[1]),
-                 s_maxColorValue * scale * s_intensity.clamp(color[2])};
+    return Color{
+        s_maxColorValue * scale * s_intensity.clamp(linearToGamma(color[0])),
+        s_maxColorValue * scale * s_intensity.clamp(linearToGamma(color[1])),
+        s_maxColorValue * scale * s_intensity.clamp(linearToGamma(color[2]))};
 }
