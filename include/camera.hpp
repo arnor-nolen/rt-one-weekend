@@ -68,7 +68,7 @@ class Camera {
             return Color{0, 0, 0};
         }
 
-        const auto record = world.hit(ray, Interval{0, s_infinity});
+        const auto record = world.hit(ray, Interval{0.001, s_infinity});
 
         if (record) {
             const auto direction = randomOnHemisphere(record->normal);
