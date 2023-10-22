@@ -12,33 +12,63 @@
 auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
 
     static constexpr auto s_aspectRatio = 16.0 / 9.0;
-    static constexpr size_t s_imageWidth = 400u;
-    static constexpr size_t s_samplesPerPixel = 100u;
+    static constexpr size_t s_imageWidth = 1200u;
+    static constexpr size_t s_samplesPerPixel = 500u;
     static constexpr size_t s_maxDepth = 50u;
     static constexpr double s_vFov = 20.0;
-    static constexpr double s_defocusAngle = 10.0;
-    static constexpr double s_focusDist = 3.4;
+    static constexpr double s_defocusAngle = 0.6;
+    static constexpr double s_focusDist = 10.0;
 
     auto world = HittableList{};
 
     auto materialGround =
-        MaterialVariant{std::in_place_type<Lambertian>, Color{0.8, 0.8, 0.0}};
-    auto materialCenter =
-        MaterialVariant{std::in_place_type<Lambertian>, Color{0.1, 0.2, 0.5}};
-    auto materialLeft = MaterialVariant{std::in_place_type<Dielectric>, 1.5};
-    auto materialRight =
-        MaterialVariant{std::in_place_type<Metal>, Color{0.8, 0.6, 0.2}, 0.0};
-
-    world.add(std::make_shared<Sphere>(Point3{0.0, -100.5, -1.0}, 100.0,
+        MaterialVariant{std::in_place_type<Lambertian>, Color{0.5, 0.5, 0.5}};
+    world.add(std::make_shared<Sphere>(Point3{0.0, -1000.0, 0.0}, 1000.0,
                                        materialGround));
-    world.add(
-        std::make_shared<Sphere>(Point3{0.0, 0.0, -1.0}, 0.5, materialCenter));
-    world.add(
-        std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5, materialLeft));
-    world.add(
-        std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, -0.4, materialLeft));
-    world.add(
-        std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, materialRight));
+
+    for (int coordA = -11; coordA < 11; ++coordA) {
+        for (int coordB = -11; coordB < 11; ++coordB) {
+            const auto chooseMat = randomDouble();
+            auto center = Point3{coordA + 0.9 * randomDouble(), 0.2,
+                                 coordB + 0.9 * randomDouble()};
+
+            if ((center - Point3{4.0, 0.2, 0.0}).length() > 0.9) {
+
+                if (chooseMat < 0.8) {
+                    const auto albedo = Color::random() * Color::random();
+                    const auto sphereMaterial =
+                        MaterialVariant{std::in_place_type<Lambertian>, albedo};
+                    world.add(
+                        std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+
+                } else if (chooseMat < 0.95) {
+                    const auto albedo = Color::random(0.5, 1.0);
+                    const auto fuzz = randomDouble(0.0, 0.5);
+                    const auto sphereMaterial = MaterialVariant{
+                        std::in_place_type<Metal>, albedo, fuzz};
+                    world.add(
+                        std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+
+                } else {
+                    const auto sphereMaterial =
+                        MaterialVariant{std::in_place_type<Dielectric>, 1.5};
+                    world.add(
+                        std::make_shared<Sphere>(center, 0.2, sphereMaterial));
+                }
+            }
+        }
+    }
+
+    auto material1 = MaterialVariant{std::in_place_type<Dielectric>, 1.5};
+    world.add(std::make_shared<Sphere>(Point3{0, 1, 0}, 1.0, material1));
+
+    auto material2 =
+        MaterialVariant{std::in_place_type<Lambertian>, Color{0.4, 0.2, 0.1}};
+    world.add(std::make_shared<Sphere>(Point3{-4.0, 1.0, 0.0}, 1.0, material2));
+
+    auto material3 =
+        MaterialVariant{std::in_place_type<Metal>, Color{0.7, 0.6, 0.5}, 0.0};
+    world.add(std::make_shared<Sphere>(Point3{4, 1, 0}, 1.0, material3));
 
     auto cameraProps = CameraProps{.outputPath = "output/image.png",
                                    .aspectRatio = s_aspectRatio,
@@ -46,8 +76,8 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
                                    .samplesPerPixel = s_samplesPerPixel,
                                    .maxDepth = s_maxDepth,
                                    .vFov = s_vFov,
-                                   .lookFrom = Point3{-2, 2, 1},
-                                   .lookAt = Point3{0, 0, -1},
+                                   .lookFrom = Point3{13, 2, 3},
+                                   .lookAt = Point3{0, 0, 0},
                                    .vUp = Vec3{0, 1, 0},
                                    .defocusAngle = s_defocusAngle,
                                    .focusDist = s_focusDist};
