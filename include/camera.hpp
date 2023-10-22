@@ -19,6 +19,10 @@ struct CameraProps {
     size_t imageWidth = 100;
     size_t samplesPerPixel = 10;
     size_t maxDepth = 10;
+    double vFov = 90;
+    Point3 lookFrom = Point3{0, 0, -1};
+    Point3 lookAt = Point3{0, 0, 0};
+    Vec3 vUp = Vec3{0, 1, 0};
 };
 
 class Camera {
@@ -122,6 +126,10 @@ class Camera {
 
     Vec3 m_pixelDeltaU{};
     Vec3 m_pixelDeltaV{};
+
+    Vec3 m_cameraU{};
+    Vec3 m_cameraV{};
+    Vec3 m_cameraW{};
 
     cimg_library::CImg<uint8_t> m_image{};
 };

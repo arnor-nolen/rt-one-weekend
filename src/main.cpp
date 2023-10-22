@@ -15,6 +15,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
     static constexpr size_t s_imageWidth = 400u;
     static constexpr size_t s_samplesPerPixel = 100u;
     static constexpr size_t s_maxDepth = 50u;
+    static constexpr double s_vFov = 20.0;
 
     auto world = HittableList{};
 
@@ -41,7 +42,11 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
                                    .aspectRatio = s_aspectRatio,
                                    .imageWidth = s_imageWidth,
                                    .samplesPerPixel = s_samplesPerPixel,
-                                   .maxDepth = s_maxDepth};
+                                   .maxDepth = s_maxDepth,
+                                   .vFov = s_vFov,
+                                   .lookFrom = Point3{-2, 2, 1},
+                                   .lookAt = Point3{0, 0, -1},
+                                   .vUp = Vec3{0, 1, 0}};
 
     auto camera = Camera{cameraProps};
 
