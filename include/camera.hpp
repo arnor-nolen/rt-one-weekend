@@ -23,6 +23,8 @@ struct CameraProps {
     Point3 lookFrom = Point3{0, 0, -1};
     Point3 lookAt = Point3{0, 0, 0};
     Vec3 vUp = Vec3{0, 1, 0};
+    double defocusAngle = 0.0;
+    double focusDist = 10.0;
 };
 
 class Camera {
@@ -104,7 +106,8 @@ class Camera {
                            (static_cast<double>(jCoord) * m_pixelDeltaV);
         auto pixelSample = pixelCenter + pixelSampleSquare();
 
-        auto rayOrigin = m_cameraCenter;
+        auto rayOrigin = m_cameraProps.defocusAngle <= 0 ? m_cameraCenter
+                                                         : defocusDiskSample();
         auto rayDirection = pixelSample - rayOrigin;
 
         return Ray{rayOrigin, rayDirection};
@@ -116,6 +119,13 @@ class Camera {
         auto pointY = -0.5 + randomDouble();
 
         return (pointX * m_pixelDeltaU) + (pointY * m_pixelDeltaV);
+    }
+
+    [[nodiscard]]
+    auto defocusDiskSample() const -> Point3 {
+        const auto point = randomInUnitDisk();
+        return m_cameraCenter + (point.getX() * m_defocusDiskU) +
+               (point.getY() * m_defocusDiskV);
     }
 
     CameraProps m_cameraProps{};
@@ -130,6 +140,9 @@ class Camera {
     Vec3 m_cameraU{};
     Vec3 m_cameraV{};
     Vec3 m_cameraW{};
+
+    Vec3 m_defocusDiskU{};
+    Vec3 m_defocusDiskV{};
 
     cimg_library::CImg<uint8_t> m_image{};
 };

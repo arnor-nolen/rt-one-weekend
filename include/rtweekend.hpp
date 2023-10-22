@@ -7,8 +7,6 @@
 #include <random>
 
 #include <interval.hpp>
-#include <ray.hpp>
-#include <vec3.hpp>
 
 constexpr double s_infinity = std::numeric_limits<double>::infinity();
 constexpr double s_pi = std::numbers::pi;

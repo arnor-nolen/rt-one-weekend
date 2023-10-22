@@ -4,6 +4,8 @@
 #include <array>
 #include <cstddef>
 
+#include <rtweekend.hpp>
+
 #include <fmt/format.h>
 
 class Vec3 {
@@ -134,5 +136,14 @@ inline auto refract(const Vec3 &unitVector, const Vec3 &normal,
         -std::sqrt(std::fabs(1.0 - rOutPerp.lengthSquared())) * normal;
     return rOutPerp + rOutParallel;
 }
+
+inline auto randomInUnitDisk() -> Vec3 {
+    while (true) {
+        const auto point = Vec3{randomDouble(-1, 1), randomDouble(-1, 1), 0};
+        if (point.lengthSquared() < 1) {
+            return point;
+        }
+    };
+};
 
 #endif
