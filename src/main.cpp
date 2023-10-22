@@ -21,11 +21,10 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
     auto materialGround =
         MaterialVariant{std::in_place_type<Lambertian>, Color{0.8, 0.8, 0.0}};
     auto materialCenter =
-        MaterialVariant{std::in_place_type<Lambertian>, Color{0.7, 0.3, 0.3}};
-    auto materialLeft =
-        MaterialVariant{std::in_place_type<Metal>, Color{0.8, 0.8, 0.8}, 0.3};
+        MaterialVariant{std::in_place_type<Lambertian>, Color{0.1, 0.2, 0.5}};
+    auto materialLeft = MaterialVariant{std::in_place_type<Dielectric>, 1.5};
     auto materialRight =
-        MaterialVariant{std::in_place_type<Metal>, Color{0.8, 0.6, 0.2}, 1.0};
+        MaterialVariant{std::in_place_type<Metal>, Color{0.8, 0.6, 0.2}, 0.0};
 
     world.add(std::make_shared<Sphere>(Point3{0.0, -100.5, -1.0}, 100.0,
                                        materialGround));
@@ -33,6 +32,8 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
         std::make_shared<Sphere>(Point3{0.0, 0.0, -1.0}, 0.5, materialCenter));
     world.add(
         std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5, materialLeft));
+    world.add(
+        std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, -0.4, materialLeft));
     world.add(
         std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, materialRight));
 

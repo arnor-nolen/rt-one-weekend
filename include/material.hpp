@@ -52,6 +52,22 @@ class Metal {
 
 static_assert(CMaterial<Metal>);
 
-using MaterialVariant = std::variant<Lambertian, Metal>;
+class Dielectric {
+  public:
+    explicit Dielectric(double indexOfRefraction) noexcept;
+
+    [[nodiscard]]
+    auto scatter(const Ray &rayIn, const HitRecord &record) const
+        -> std::optional<ScatterInfo>;
+
+  private:
+    static auto reflectance(double cosine, double refIdx) -> double;
+
+    double m_indexOfRefraction;
+};
+
+static_assert(CMaterial<Dielectric>);
+
+using MaterialVariant = std::variant<Lambertian, Metal, Dielectric>;
 
 #endif

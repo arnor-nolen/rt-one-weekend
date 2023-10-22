@@ -1,5 +1,7 @@
 #include <material.hpp>
 
+#include <rtweekend.hpp>
+
 #include <hit_record.hpp>
 #include <ray.hpp>
 
@@ -13,7 +15,8 @@ auto Lambertian::scatter(const Ray & /* rayIn */, const HitRecord &record) const
         scatterDirection = record.normal;
     }
 
-    return ScatterInfo{m_albedo, Ray{record.point, scatterDirection}};
+    return ScatterInfo{.attenuation = m_albedo,
+                       .scattered = Ray{record.point, scatterDirection}};
 }
 
 Metal::Metal(const Color &color, double fuzz) noexcept
@@ -32,5 +35,34 @@ auto Metal::scatter(const Ray &rayIn, const HitRecord &record) const
         return std::nullopt;
     }
 
-    return ScatterInfo{m_albedo, scattered};
+    return ScatterInfo{.attenuation = m_albedo, .scattered = scattered};
+}
+
+Dielectric::Dielectric(double indexOfRefraction) noexcept
+    : m_indexOfRefraction{indexOfRefraction} {}
+
+auto Dielectric::scatter(const Ray &rayIn, const HitRecord &record) const
+    -> std::optional<ScatterInfo> {
+
+    auto refractionRatio =
+        record.frontFace ? 1.0 / m_indexOfRefraction : m_indexOfRefraction;
+
+    auto unitDirection = unitVector(rayIn.direction());
+    auto cosTheta = std::fmin(dot(-unitDirection, record.normal), 1.0);
+    auto sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
+
+    auto cannotRefract = refractionRatio * sinTheta > 1.0;
+    auto direction =
+        cannotRefract || reflectance(cosTheta, refractionRatio) > randomDouble()
+            ? reflect(unitDirection, record.normal)
+            : refract(unitDirection, record.normal, refractionRatio);
+
+    return ScatterInfo{.attenuation = Color{1.0, 1.0, 1.0},
+                       .scattered = Ray{record.point, direction}};
+}
+
+auto Dielectric::reflectance(double cosine, double refIdx) -> double {
+    auto reflectionCoeff = (1 - refIdx) / (1 + refIdx);
+    reflectionCoeff *= reflectionCoeff;
+    return reflectionCoeff + (1 - reflectionCoeff) * std::pow((1 - cosine), 5);
 }

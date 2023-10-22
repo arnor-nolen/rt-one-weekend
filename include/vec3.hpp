@@ -126,4 +126,13 @@ inline auto randomOnHemisphere(const Vec3 &normal) -> Vec3 {
 [[nodiscard]]
 auto reflect(const Vec3 &vector, const Vec3 &normal) -> Vec3;
 
+inline auto refract(const Vec3 &unitVector, const Vec3 &normal,
+                    double etaiOverEtat) -> Vec3 {
+    auto cosTheta = std::fmin(dot(-unitVector, normal), 1.0);
+    Vec3 rOutPerp = etaiOverEtat * (unitVector + cosTheta * normal);
+    Vec3 rOutParallel =
+        -std::sqrt(std::fabs(1.0 - rOutPerp.lengthSquared())) * normal;
+    return rOutPerp + rOutParallel;
+}
+
 #endif
