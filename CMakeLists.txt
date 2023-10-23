@@ -39,6 +39,7 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 # findX.cmake).
 find_package(fmt REQUIRED CONFIG)
 find_package(cimg REQUIRED CONFIG)
+find_package(Threads REQUIRED)
 
 # Set C++ standard.
 set(TARGET_COMPILE_FEATURES cxx_std_20)
@@ -103,4 +104,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 # -------------------------------------
 
 # Link libraries.
-target_link_libraries(${PROJECT_NAME} fmt::fmt cimg::cimg)
+target_link_libraries(${PROJECT_NAME} Threads::Threads fmt::fmt cimg::cimg)

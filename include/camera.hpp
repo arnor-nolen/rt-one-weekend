@@ -2,6 +2,8 @@
 #define CAMERA_HPP
 
 #include <filesystem>
+#include <ranges>
+#include <thread>
 
 #include <fmt/format.h>
 #include <impl/cimg.hpp>
@@ -10,6 +12,7 @@
 
 #include <color.hpp>
 #include <hittable.hpp>
+#include <map_reduce.hpp>
 #include <material.hpp>
 #include <sphere.hpp>
 
@@ -68,16 +71,20 @@ class Camera {
 };
 
 void Camera::render(const CHittable auto &world) {
+    const auto numOfPixels = m_image.width() * m_image.height();
+    const auto range = std::ranges::views::iota(0, numOfPixels);
 
-    for (size_t j = 0; j < m_imageHeight; ++j) {
-        fmt::print("Scanlines remaining: {}.\n", m_imageHeight - j);
-
-        for (size_t i = 0; i < m_cameraProps.imageWidth; ++i) {
+    mapReduce(
+        range,
+        [&, this](const auto &pixelId) {
             auto pixelColor = Color{0, 0, 0};
+
+            auto idxW = pixelId / m_image.height();
+            auto idxH = pixelId % m_image.height();
 
             for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel;
                  ++sample) {
-                auto ray = getRay(i, j);
+                auto ray = getRay(idxW, idxH);
                 pixelColor +=
                     convertColor(rayColor(ray, m_cameraProps.maxDepth, world),
                                  m_cameraProps.samplesPerPixel);
@@ -88,10 +95,11 @@ void Camera::render(const CHittable auto &world) {
                                        static_cast<uint8_t>(pixelColor.getY()),
                                        static_cast<uint8_t>(pixelColor.getZ())};
 
-            m_image.draw_point(static_cast<int>(i), static_cast<int>(j),
+            m_image.draw_point(static_cast<int>(idxW), static_cast<int>(idxH),
                                colorArray.data());
-        }
-    }
+            return true;
+        },
+        std::plus{}, std::thread::hardware_concurrency());
 
     // Windows doesn't play nicely with save_png and
     // std::filesystem, so we have to convert twice.
