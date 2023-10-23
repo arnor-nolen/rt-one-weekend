@@ -48,3 +48,29 @@ void Camera::initialize() {
         static_cast<unsigned int>(m_cameraProps.imageWidth),
         static_cast<unsigned int>(m_imageHeight), 1u, 3u, 0u);
 }
+
+auto Camera::getRay(size_t iCoord, size_t jCoord) const -> Ray {
+    auto pixelCenter = m_pixel00Loc +
+                       (static_cast<double>(iCoord) * m_pixelDeltaU) +
+                       (static_cast<double>(jCoord) * m_pixelDeltaV);
+    auto pixelSample = pixelCenter + pixelSampleSquare();
+
+    auto rayOrigin =
+        m_cameraProps.defocusAngle <= 0 ? m_cameraCenter : defocusDiskSample();
+    auto rayDirection = pixelSample - rayOrigin;
+
+    return Ray{rayOrigin, rayDirection};
+}
+
+auto Camera::pixelSampleSquare() const -> Vec3 {
+    auto pointX = -0.5 + randomDouble();
+    auto pointY = -0.5 + randomDouble();
+
+    return (pointX * m_pixelDeltaU) + (pointY * m_pixelDeltaV);
+}
+
+auto Camera::defocusDiskSample() const -> Point3 {
+    const auto point = randomInUnitDisk();
+    return m_cameraCenter + (point.getX() * m_defocusDiskU) +
+           (point.getY() * m_defocusDiskV);
+}
