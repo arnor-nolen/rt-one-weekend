@@ -44,4 +44,35 @@ auto mapReduce(std::ranges::input_range auto range, const F1 &funcCalc,
     return result;
 }
 
+template <typename F1>
+void parallelize(std::ranges::input_range auto range, const F1 &funcCalc,
+                 const size_t threads) {
+
+    const size_t threadDistance = range.size() / threads;
+    auto promises = std::vector<std::future<void>>{};
+
+    const auto chunkMapReduce =
+        [&funcCalc](std::ranges::input_range auto chunkRange) {
+            for (const auto &elem : chunkRange) {
+                funcCalc(elem);
+            }
+        };
+
+    auto threadStart = range.begin();
+
+    for (size_t threadId = 0u; threadId < threads - 1; ++threadId) {
+        promises.emplace_back(std::async(
+            std::launch::async, chunkMapReduce,
+            std::ranges::subrange(threadStart, threadStart + threadDistance)));
+        threadStart += threadDistance;
+    }
+    promises.emplace_back(
+        std::async(std::launch::async, chunkMapReduce,
+                   std::ranges::subrange(threadStart, range.end())));
+
+    for (auto &promise : promises) {
+        promise.get();
+    }
+}
+
 #endif

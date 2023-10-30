@@ -74,7 +74,7 @@ void Camera::render(const CHittable auto &world) {
     const auto numOfPixels = m_image.width() * m_image.height();
     const auto range = std::ranges::views::iota(0, numOfPixels);
 
-    mapReduce(
+    parallelize(
         range,
         [&, this](const auto &pixelId) {
             auto pixelColor = Color{0, 0, 0};
@@ -99,7 +99,7 @@ void Camera::render(const CHittable auto &world) {
                                colorArray.data());
             return true;
         },
-        std::plus{}, std::thread::hardware_concurrency());
+        std::thread::hardware_concurrency());
 
     // Windows doesn't play nicely with save_png and
     // std::filesystem, so we have to convert twice.
@@ -110,33 +110,39 @@ void Camera::render(const CHittable auto &world) {
 
 auto Camera::rayColor(const Ray &ray, size_t depth,
                       const CHittable auto &world) const -> Color {
+    auto outputColor = Color{1.0, 1.0, 1.0};
+    auto currentRay = ray;
 
-    if (depth == 0) {
-        return Color{0, 0, 0};
-    }
+    for (size_t i = 0u; i < depth; ++i) {
+        const auto record = world.hit(currentRay, Interval{0.001, s_infinity});
 
-    if (const auto record = world.hit(ray, Interval{0.001, s_infinity})) {
+        // Color background.
+        if (!record) {
+            Vec3 unitDirection = unitVector(currentRay.direction());
+            const auto currentValue = 0.5 * (unitDirection.getY() + 1.0);
+
+            const auto skyColor = (1.0 - currentValue) * Color{1.0, 1.0, 1.0} +
+                                  currentValue * Color{0.5, 0.7, 1.0};
+
+            return outputColor * skyColor;
+        }
 
         const auto scatterInfo = std::visit(
             [&](const CMaterial auto &elem) {
-                return elem.scatter(ray, *record);
+                return elem.scatter(currentRay, *record);
             },
             record->material);
 
-        if (scatterInfo) {
-            return scatterInfo->attenuation *
-                   rayColor(scatterInfo->scattered, depth - 1, world);
+        if (!scatterInfo) {
+            return Color{0, 0, 0};
         }
 
-        return Color{0, 0, 0};
+        outputColor = outputColor * scatterInfo->attenuation;
+        currentRay = scatterInfo->scattered;
     }
 
-    // Color background.
-    Vec3 unitDirection = unitVector(ray.direction());
-    const auto currentValue = 0.5 * (unitDirection.getY() + 1.0);
-
-    return (1.0 - currentValue) * Color{1.0, 1.0, 1.0} +
-           currentValue * Color{0.5, 0.7, 1.0};
+    // Recursion limit exceeded.
+    return Color{0, 0, 0};
 }
 
 #endif
