@@ -41,9 +41,6 @@ find_package(fmt REQUIRED CONFIG)
 find_package(cimg REQUIRED CONFIG)
 find_package(Threads REQUIRED)
 
-# Set C++ standard.
-set(TARGET_COMPILE_FEATURES cxx_std_20)
-
 # -------------------------------------
 # Set compiler-specific stuff.
 # -------------------------------------
@@ -63,7 +60,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
-  add_compile_options(-Wall -Wextra -Wpedantic -Wshadow)
+  add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -march=native)
 
 else()
 
@@ -80,28 +77,42 @@ endif()
 # -------------------------------------
 
 # Build the main app.
-set(SOURCE_FILES 
+set(SOURCE_FILES
     "src/main.cpp"
     "src/vec3.cpp"
-    "src/color.cpp" 
-    "src/ray.cpp" 
-    "src/sphere.cpp" 
-    "src/hit_record.cpp" 
+    "src/color.cpp"
+    "src/ray.cpp"
+    "src/sphere.cpp"
+    "src/hit_record.cpp"
     "src/hittable_list.cpp"
     "src/interval.cpp"
     "src/camera.cpp"
     "src/material.cpp"
-    )
+)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_compile_features(${PROJECT_NAME} PUBLIC ${TARGET_COMPILE_FEATURES})
+
+# Set C++ standard.
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+set_target_properties(
+  ${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF
+)
+
+# Enable link-time optimizations if supported by compiler.
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_result OUTPUT ipo_output)
+if(ipo_result)
+  set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+  message(INFO "IPO is not supported: ${output}. Continuing without IPO.")
+endif()
 
 # Add "include" to the include path.
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
+# Link libraries.
+target_link_libraries(${PROJECT_NAME} Threads::Threads fmt::fmt cimg::cimg)
+
 # -------------------------------------
 # End of building executables.
 # -------------------------------------
-
-# Link libraries.
-target_link_libraries(${PROJECT_NAME} Threads::Threads fmt::fmt cimg::cimg)
