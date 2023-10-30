@@ -102,7 +102,7 @@ set_target_properties(
 include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_result OUTPUT ipo_output)
 if(ipo_result)
-  set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 else()
   message(INFO "IPO is not supported: ${output}. Continuing without IPO.")
 endif()
