@@ -7,7 +7,7 @@
 
 Lambertian::Lambertian(const Color &color) noexcept : m_albedo{color} {}
 
-auto Lambertian::scatter(const Ray & /* rayIn */, const HitRecord &record) const
+auto Lambertian::scatter(const Ray &rayIn, const HitRecord &record) const
     -> std::optional<ScatterInfo> {
     auto scatterDirection = record.normal + randomUnitVector();
 
@@ -16,7 +16,11 @@ auto Lambertian::scatter(const Ray & /* rayIn */, const HitRecord &record) const
     }
 
     return ScatterInfo{.attenuation = m_albedo,
-                       .scattered = Ray{record.point, scatterDirection}};
+                       .scattered = Ray{
+                           record.point,
+                           scatterDirection,
+                           rayIn.time(),
+                       }};
 }
 
 Metal::Metal(const Color &color, double fuzz) noexcept
@@ -28,14 +32,17 @@ auto Metal::scatter(const Ray &rayIn, const HitRecord &record) const
     const auto reflected =
         reflect(unitVector(rayIn.direction()), record.normal);
 
-    const auto scattered =
-        Ray{record.point, reflected + m_fuzz * randomUnitVector()};
+    const auto scattered = Ray{
+        record.point, reflected + m_fuzz * randomUnitVector(), rayIn.time()};
 
     if (dot(scattered.direction(), record.normal) <= 0) {
         return std::nullopt;
     }
 
-    return ScatterInfo{.attenuation = m_albedo, .scattered = scattered};
+    return ScatterInfo{
+        .attenuation = m_albedo,
+        .scattered = scattered,
+    };
 }
 
 Dielectric::Dielectric(double indexOfRefraction) noexcept
@@ -57,8 +64,10 @@ auto Dielectric::scatter(const Ray &rayIn, const HitRecord &record) const
             ? reflect(unitDirection, record.normal)
             : refract(unitDirection, record.normal, refractionRatio);
 
-    return ScatterInfo{.attenuation = Color{1.0, 1.0, 1.0},
-                       .scattered = Ray{record.point, direction}};
+    return ScatterInfo{
+        .attenuation = Color{1.0, 1.0, 1.0},
+        .scattered = Ray{record.point, direction, rayIn.time()},
+    };
 }
 
 auto Dielectric::reflectance(double cosine, double refIdx) -> double {

@@ -58,8 +58,9 @@ auto Camera::getRay(size_t iCoord, size_t jCoord) const -> Ray {
     auto rayOrigin =
         m_cameraProps.defocusAngle <= 0 ? m_cameraCenter : defocusDiskSample();
     auto rayDirection = pixelSample - rayOrigin;
+    auto rayTime = randomDouble();
 
-    return Ray{rayOrigin, rayDirection};
+    return Ray{rayOrigin, rayDirection, rayTime};
 }
 
 auto Camera::pixelSampleSquare() const -> Vec3 {

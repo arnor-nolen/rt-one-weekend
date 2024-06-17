@@ -1,6 +1,5 @@
 #include <cstddef>
 #include <cstdlib>
-#include <filesystem>
 
 #include <rtweekend.hpp>
 
@@ -38,7 +37,9 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
                         const auto albedo = Color::random() * Color::random();
                         const auto sphereMaterial = MaterialVariant{
                             std::in_place_type<Lambertian>, albedo};
-                        world.add<Sphere>(center, 0.2, sphereMaterial);
+                        const auto center2 =
+                            center + Vec3{0, randomDouble(0, 0.5), 0};
+                        world.add<Sphere>(center, center2, 0.2, sphereMaterial);
 
                     } else if (chooseMat < 0.95) {
                         const auto albedo = Color::random(0.5, 1.0);
