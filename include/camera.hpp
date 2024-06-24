@@ -2,13 +2,12 @@
 #define CAMERA_HPP
 
 #include <filesystem>
+#include <limits>
 #include <ranges>
 #include <thread>
 
 #include <fmt/format.h>
 #include <impl/cimg.hpp>
-
-#include <rtweekend.hpp>
 
 #include <color.hpp>
 #include <hittable.hpp>
@@ -114,7 +113,9 @@ auto Camera::rayColor(const Ray &ray, size_t depth,
     auto currentRay = ray;
 
     for (size_t i = 0u; i < depth; ++i) {
-        const auto record = world.hit(currentRay, Interval{0.001, s_infinity});
+        const auto record = world.hit(
+            currentRay,
+            Interval{0.001, +std::numeric_limits<double>::infinity()});
 
         // Color background.
         if (!record) {

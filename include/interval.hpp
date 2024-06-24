@@ -19,6 +19,9 @@ class Interval {
     auto clamp(double value) const noexcept -> double;
 
     [[nodiscard]]
+    auto expand(double delta) const noexcept -> Interval;
+
+    [[nodiscard]]
     auto getMin() const noexcept -> double;
 
     [[nodiscard]]

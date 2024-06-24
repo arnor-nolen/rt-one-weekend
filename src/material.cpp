@@ -1,7 +1,5 @@
 #include <material.hpp>
 
-#include <rtweekend.hpp>
-
 #include <hit_record.hpp>
 #include <ray.hpp>
 

@@ -4,9 +4,9 @@
 #include <array>
 #include <cstddef>
 
-#include <rtweekend.hpp>
-
 #include <fmt/format.h>
+
+#include <random.hpp>
 
 class Vec3 {
 

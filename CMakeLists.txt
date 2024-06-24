@@ -88,6 +88,8 @@ set(SOURCE_FILES
     "src/interval.cpp"
     "src/camera.cpp"
     "src/material.cpp"
+    "src/degrees_to_radians.cpp"
+    "src/random.cpp"
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

@@ -3,8 +3,6 @@
 #include <cassert>
 #include <cmath>
 
-#include <rtweekend.hpp>
-
 Vec3::Vec3() noexcept : m_vec{0, 0, 0} {}
 
 Vec3::Vec3(double value0, double value1, double value2) noexcept

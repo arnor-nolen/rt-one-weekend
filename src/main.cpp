@@ -1,8 +1,6 @@
 #include <cstddef>
 #include <cstdlib>
 
-#include <rtweekend.hpp>
-
 #include <camera.hpp>
 #include <color.hpp>
 #include <hittable_list.hpp>
