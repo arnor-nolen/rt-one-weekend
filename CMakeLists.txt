@@ -90,6 +90,9 @@ set(SOURCE_FILES
     "src/material.cpp"
     "src/degrees_to_radians.cpp"
     "src/random.cpp"
+    "src/aabb.cpp"
+    "src/halt.cpp"
+    "src/bvh.cpp"
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

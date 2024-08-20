@@ -8,6 +8,7 @@ Checks: >
   -altera-unroll-loops,
   -readability-uppercase-literal-suffix,
   -hicpp-uppercase-literal-suffix,
+  -readability-redundant-member-init,
 
   -bugprone-easily-swappable-parameters,
   -altera-id-dependent-backward-branch,
@@ -58,6 +59,8 @@ CheckOptions:
     value: 1
   - key: misc-assert-side-effect.AssertMacros
     value: "assert"
+  - key: readability-implicit-bool-conversion.AllowPointerConditions
+    value: true
 WarningsAsErrors: ""
 HeaderFilterRegex: ".*"
 FormatStyle: none

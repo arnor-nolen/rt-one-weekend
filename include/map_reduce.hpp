@@ -3,13 +3,12 @@
 
 #include <future>
 #include <ranges>
-#include <thread>
 #include <vector>
 
 template <typename F1, typename F2>
 auto mapReduce(std::ranges::input_range auto range, const F1 &funcCalc,
-               const F2 &funcReduce, const size_t threads)
-    -> decltype(funcCalc(*range.begin())) {
+               const F2 &funcReduce,
+               const size_t threads) -> decltype(funcCalc(*range.begin())) {
 
     using returnType = decltype(funcCalc(*range.begin()));
 

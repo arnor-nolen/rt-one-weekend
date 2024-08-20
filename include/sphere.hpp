@@ -1,9 +1,11 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
 
+#include <optional>
+
+#include <aabb.hpp>
 #include <hittable.hpp>
 #include <material.hpp>
-#include <optional>
 #include <vec3.hpp>
 
 class Interval;
@@ -16,8 +18,11 @@ class Sphere {
                     MaterialVariant material) noexcept;
 
     [[nodiscard]]
-    auto hit(const Ray &ray, Interval rayT) const noexcept
-        -> std::optional<HitRecord>;
+    auto hit(const Ray &ray,
+             Interval rayT) const noexcept -> std::optional<HitRecord>;
+
+    [[nodiscard]]
+    auto boundingBox() const noexcept -> const Aabb &;
 
     [[nodiscard]]
     auto sphereCenter(double time) const noexcept -> Point3;
@@ -28,8 +33,9 @@ class Sphere {
     double m_radius;
     MaterialVariant m_material;
     bool m_isMoving{false};
+    Aabb m_boundingBox;
 };
 
-static_assert(CHittable<Sphere>);
+static_assert(concepts::Hittable<Sphere>);
 
 #endif

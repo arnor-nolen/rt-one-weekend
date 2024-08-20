@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <cstdlib>
 
+#include <bvh.hpp>
 #include <camera.hpp>
 #include <color.hpp>
 #include <hittable_list.hpp>
@@ -8,7 +9,6 @@
 
 auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
     try {
-
         static constexpr auto s_aspectRatio = 16.0 / 9.0;
         static constexpr size_t s_imageWidth = 1200u;
         static constexpr size_t s_samplesPerPixel = 500u;
@@ -65,6 +65,8 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
         auto material3 = MaterialVariant{std::in_place_type<Metal>,
                                          Color{0.7, 0.6, 0.5}, 0.0};
         world.add<Sphere>(Point3{4, 1, 0}, 1.0, material3);
+
+        world.updateBvh();
 
         auto cameraProps = CameraProps{.outputPath = "output/image.png",
                                        .aspectRatio = s_aspectRatio,

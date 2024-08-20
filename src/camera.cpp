@@ -1,7 +1,5 @@
 #include <camera.hpp>
 
-#include <utility>
-
 #include <degrees_to_radians.hpp>
 
 Camera::Camera(CameraProps cameraProps)

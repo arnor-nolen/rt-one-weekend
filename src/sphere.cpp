@@ -4,15 +4,27 @@
 
 Sphere::Sphere(const Point3 &center, double radius,
                MaterialVariant material) noexcept
-    : m_center1{center}, m_radius{fmax(0, radius)}, m_material{material} {};
+    : m_center1{center}, m_radius{fmax(0, radius)}, m_material{material} {
+
+    const auto radiusVec = Vec3{m_radius, m_radius, m_radius};
+    m_boundingBox = Aabb{m_center1 - radiusVec, m_center1 + radiusVec};
+};
 
 Sphere::Sphere(const Point3 &center1, const Point3 &center2, double radius,
                MaterialVariant material) noexcept
     : m_center1{center1}, m_centerVec{center2 - center1},
-      m_radius{fmax(0, radius)}, m_material{material}, m_isMoving{true} {};
+      m_radius{fmax(0, radius)}, m_material{material}, m_isMoving{true} {
 
-auto Sphere::hit(const Ray &ray, Interval rayT) const noexcept
-    -> std::optional<HitRecord> {
+    const auto radiusVec = Vec3{m_radius, m_radius, m_radius};
+    const auto boundingBox1 =
+        Aabb{m_center1 - radiusVec, m_center1 + radiusVec};
+    const auto boundingBox2 = Aabb{center2 - radiusVec, center2 + radiusVec};
+
+    m_boundingBox = Aabb{boundingBox1, boundingBox2};
+};
+
+auto Sphere::hit(const Ray &ray,
+                 Interval rayT) const noexcept -> std::optional<HitRecord> {
     const auto center = m_isMoving ? sphereCenter(ray.time()) : m_center1;
     const auto vec = ray.origin() - center;
 
@@ -41,6 +53,10 @@ auto Sphere::hit(const Ray &ray, Interval rayT) const noexcept
     setFaceNormal(record, ray, (record.point - center) / m_radius);
 
     return record;
+}
+
+auto Sphere::boundingBox() const noexcept -> const Aabb & {
+    return m_boundingBox;
 }
 
 auto Sphere::sphereCenter(double time) const noexcept -> Point3 {

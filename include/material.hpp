@@ -3,7 +3,6 @@
 
 #include <concepts>
 #include <optional>
-#include <utility>
 #include <variant>
 
 #include <color.hpp>
@@ -16,49 +15,53 @@ struct ScatterInfo {
     Ray scattered;
 };
 
+namespace concepts {
+
 template <typename T>
-concept CMaterial = requires(const Ray &rayIn, const HitRecord &record) {
+concept Material = requires(const Ray &rayIn, const HitRecord &record) {
     {
         std::declval<const T>().scatter(rayIn, record)
     } -> std::same_as<std::optional<ScatterInfo>>;
 };
+
+} // namespace concepts
 
 class Lambertian {
   public:
     explicit Lambertian(const Color &color) noexcept;
 
     [[nodiscard]]
-    auto scatter(const Ray &rayIn, const HitRecord &record) const
-        -> std::optional<ScatterInfo>;
+    auto scatter(const Ray &rayIn,
+                 const HitRecord &record) const -> std::optional<ScatterInfo>;
 
   private:
     Color m_albedo;
 };
 
-static_assert(CMaterial<Lambertian>);
+static_assert(concepts::Material<Lambertian>);
 
 class Metal {
   public:
     explicit Metal(const Color &color, double fuzz) noexcept;
 
     [[nodiscard]]
-    auto scatter(const Ray &rayIn, const HitRecord &record) const
-        -> std::optional<ScatterInfo>;
+    auto scatter(const Ray &rayIn,
+                 const HitRecord &record) const -> std::optional<ScatterInfo>;
 
   private:
     Color m_albedo;
     double m_fuzz;
 };
 
-static_assert(CMaterial<Metal>);
+static_assert(concepts::Material<Metal>);
 
 class Dielectric {
   public:
     explicit Dielectric(double indexOfRefraction) noexcept;
 
     [[nodiscard]]
-    auto scatter(const Ray &rayIn, const HitRecord &record) const
-        -> std::optional<ScatterInfo>;
+    auto scatter(const Ray &rayIn,
+                 const HitRecord &record) const -> std::optional<ScatterInfo>;
 
   private:
     static auto reflectance(double cosine, double refIdx) -> double;
@@ -66,7 +69,7 @@ class Dielectric {
     double m_indexOfRefraction;
 };
 
-static_assert(CMaterial<Dielectric>);
+static_assert(concepts::Material<Dielectric>);
 
 using MaterialVariant = std::variant<Lambertian, Metal, Dielectric>;
 

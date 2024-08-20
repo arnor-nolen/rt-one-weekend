@@ -14,3 +14,7 @@ auto randomDouble() noexcept -> double {
 auto randomDouble(double min, double max) noexcept -> double {
     return min + (max - min) * randomDouble();
 };
+
+auto randomInt(int min, int max) noexcept -> int {
+    return static_cast<int>(randomDouble(min, max + 1));
+}

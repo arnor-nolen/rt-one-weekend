@@ -1,37 +1,55 @@
 #ifndef HITTABLE_LIST_HPP
 #define HITTABLE_LIST_HPP
 
-#include <hittable.hpp>
-
 #include <tuple>
-#include <utility>
 #include <vector>
 
+#include <bvh.hpp>
+#include <hittable.hpp>
 #include <sphere.hpp>
 
 class Interval;
+class Bvh;
 
 class HittableList {
   public:
-    explicit HittableList() = default;
+    using HittableTuple = std::tuple<std::vector<Sphere>>;
+
+    explicit HittableList() noexcept = default;
+    explicit HittableList(concepts::Hittable auto &hittable) noexcept {
+        add(std::forward(hittable));
+    }
 
     void clear();
 
-    template <CHittable T, typename... Args>
+    template <concepts::Hittable T, typename... Args>
     void add(Args &&...args) {
-        std::get<std::vector<T>>(m_objects).emplace_back(
-            std::forward<Args>(args)...);
+        const auto &newHittable =
+            std::get<std::vector<T>>(m_objects).emplace_back(
+                std::forward<Args>(args)...);
+        m_boundingBox = Aabb{m_boundingBox, newHittable.boundingBox()};
     }
 
     [[nodiscard]]
     auto hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>;
 
-  private:
-    using HittableTuple = std::tuple<std::vector<Sphere>>;
+    [[nodiscard]]
+    auto boundingBox() const noexcept -> const Aabb &;
 
-    HittableTuple m_objects{};
+    [[nodiscard]]
+    auto getObjects() const noexcept -> const HittableTuple &;
+
+    [[nodiscard]]
+    auto getObjects() noexcept -> HittableTuple &;
+
+    void updateBvh() noexcept;
+
+  private:
+    HittableTuple m_objects;
+    Bvh m_bvh;
+    Aabb m_boundingBox;
 };
 
-static_assert(CHittable<HittableList>);
+static_assert(concepts::Hittable<HittableList>);
 
 #endif

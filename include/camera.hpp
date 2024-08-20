@@ -33,13 +33,13 @@ class Camera {
   public:
     explicit Camera(CameraProps cameraProps);
 
-    void render(const CHittable auto &world);
+    void render(const concepts::Hittable auto &world);
 
   private:
     void initialize();
 
     auto rayColor(const Ray &ray, size_t depth,
-                  const CHittable auto &world) const -> Color;
+                  const concepts::Hittable auto &world) const -> Color;
 
     [[nodiscard]]
     auto getRay(size_t iCoord, size_t jCoord) const -> Ray;
@@ -69,7 +69,7 @@ class Camera {
     cimg_library::CImg<uint8_t> m_image{};
 };
 
-void Camera::render(const CHittable auto &world) {
+void Camera::render(const concepts::Hittable auto &world) {
     const auto numOfPixels = m_image.width() * m_image.height();
     const auto range = std::ranges::views::iota(0, numOfPixels);
 
@@ -108,7 +108,7 @@ void Camera::render(const CHittable auto &world) {
 }
 
 auto Camera::rayColor(const Ray &ray, size_t depth,
-                      const CHittable auto &world) const -> Color {
+                      const concepts::Hittable auto &world) const -> Color {
     auto outputColor = Color{1.0, 1.0, 1.0};
     auto currentRay = ray;
 
@@ -129,7 +129,7 @@ auto Camera::rayColor(const Ray &ray, size_t depth,
         }
 
         const auto scatterInfo = std::visit(
-            [&](const CMaterial auto &elem) {
+            [&](const concepts::Material auto &elem) {
                 return elem.scatter(currentRay, *record);
             },
             record->material);
