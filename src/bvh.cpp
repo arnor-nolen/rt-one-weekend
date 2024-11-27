@@ -1,6 +1,9 @@
 #include <bvh.hpp>
 
 #include <algorithm>
+// #include <bit>
+#include <cassert>
+#include <stack>
 
 #include <hittable_list.hpp>
 
@@ -11,25 +14,51 @@ Bvh::Bvh(HittableList &list) noexcept
 Bvh::Bvh(std::tuple<std::vector<Sphere>> &objects, size_t start,
          size_t end) noexcept {
     auto bvhNode = BvhNode{this, objects, start, end};
-    m_nodes.push_back(std::move(bvhNode));
-}
-
-Bvh::Bvh(Bvh &&other) noexcept : Bvh{} { swap(other); }
-
-auto Bvh::operator=(Bvh &&other) noexcept -> Bvh & {
-    swap(other);
-    return *this;
-}
-
-void Bvh::swap(Bvh &other) noexcept {
-    std::swap(m_nodes, other.m_nodes);
-    for (auto &elem : m_nodes) {
-        elem.m_bvh = this;
-    }
+    m_nodes.push_back(bvhNode);
 }
 
 auto Bvh::hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord> {
-    return m_nodes.back().hit(ray, rayT);
+    assert(!m_nodes.empty());
+
+    const auto *currentNode = &m_nodes.back();
+
+    // auto container = std::vector<const BvhNode *>{};
+    // const auto treeDepth =
+    // static_cast<size_t>(std::bit_width(m_nodes.size()));
+    //
+    // container.reserve(treeDepth);
+
+    auto stack = std::stack<const BvhNode *, std::vector<const BvhNode *>>{};
+    stack.push(currentNode);
+
+    auto hitClosest = std::optional<HitRecord>{};
+    auto rayTBeforeHit = rayT;
+
+    while (!stack.empty()) {
+        while (!currentNode->m_sphere &&
+               currentNode->boundingBox().hit(ray, rayTBeforeHit)) {
+
+            stack.push(currentNode);
+            currentNode = &m_nodes[currentNode->m_childIndexLeft];
+        }
+
+        if (currentNode->m_sphere) {
+            const auto hitCurrent =
+                currentNode->m_sphere->hit(ray, rayTBeforeHit);
+
+            if (hitCurrent) {
+                rayTBeforeHit = Interval{rayT.getMin(), hitCurrent->time};
+                hitClosest = hitCurrent;
+            }
+        }
+
+        currentNode = stack.top();
+        stack.pop();
+
+        currentNode = &m_nodes[currentNode->m_childIndexRight];
+    }
+
+    return hitClosest;
 }
 
 auto Bvh::boundingBox() const noexcept -> const Aabb & {
@@ -38,9 +67,11 @@ auto Bvh::boundingBox() const noexcept -> const Aabb & {
 
 BvhNode::BvhNode(Bvh *bvh, std::tuple<std::vector<Sphere>> &objects,
                  size_t start, size_t end) noexcept
-    : m_boundingBox{Aabb::s_empty}, m_bvh{bvh} {
+    : m_boundingBox{Aabb::s_empty} {
 
     const size_t objectSpan = end - start;
+
+    assert(objectSpan != 0);
 
     auto &spheres = std::get<std::vector<Sphere>>(objects);
 
@@ -54,68 +85,23 @@ BvhNode::BvhNode(Bvh *bvh, std::tuple<std::vector<Sphere>> &objects,
                             : (axis == 1) ? boxYCompare
                                           : boxZCompare;
 
-    switch (objectSpan) {
-    case 1: {
-        m_leftSphere = &spheres[start];
-        m_rightSphere = &spheres[start];
-        break;
-    }
-    case 2: {
-        m_leftSphere = &spheres[start];
-        m_rightSphere = &spheres[start + 1];
-        break;
-    }
-    default: {
-        std::sort(std::begin(spheres) + static_cast<int64_t>(start),
-                  std::begin(spheres) + static_cast<int64_t>(end), comparator);
-
-        const auto mid = start + objectSpan / 2;
-
-        auto leftNode = BvhNode{m_bvh, objects, start, mid};
-        m_childIndexLeft = m_bvh->getNodes().size();
-        m_bvh->getNodes().push_back(std::move(leftNode));
-
-        auto rightNode = BvhNode{m_bvh, objects, mid, end};
-        m_childIndexRight = m_bvh->getNodes().size();
-        m_bvh->getNodes().push_back(std::move(rightNode));
-
-        break;
-    }
-    }
-}
-
-auto BvhNode::hit(const Ray &ray,
-                  Interval rayT) const -> std::optional<HitRecord> {
-    if (!m_boundingBox.hit(ray, rayT)) {
-        return std::nullopt;
+    if (objectSpan == 1) {
+        m_sphere = &spheres[start];
+        return;
     }
 
-    if (m_leftSphere && m_rightSphere) {
-        const auto hitLeft = m_leftSphere->hit(ray, rayT);
+    std::sort(std::begin(spheres) + static_cast<ptrdiff_t>(start),
+              std::begin(spheres) + static_cast<ptrdiff_t>(end), comparator);
 
-        const auto hitRight = m_rightSphere->hit(
-            ray,
-            Interval{rayT.getMin(), hitLeft ? hitLeft->time : rayT.getMax()});
+    const auto mid = start + objectSpan / 2;
 
-        if (!hitLeft && !hitRight) {
-            return std::nullopt;
-        }
+    auto leftNode = BvhNode{bvh, objects, start, mid};
+    m_childIndexLeft = bvh->getNodes().size();
+    bvh->getNodes().push_back(std::move(leftNode));
 
-        return hitRight ? hitRight : hitLeft;
-    }
-
-    const auto &leftBvh = m_bvh->getNodes()[m_childIndexLeft];
-    const auto hitLeft = leftBvh.hit(ray, rayT);
-
-    const auto &rightBvh = m_bvh->getNodes()[m_childIndexRight];
-    const auto hitRight = rightBvh.hit(
-        ray, Interval{rayT.getMin(), hitLeft ? hitLeft->time : rayT.getMax()});
-
-    if (!hitLeft && !hitRight) {
-        return std::nullopt;
-    }
-
-    return hitRight ? hitRight : hitLeft;
+    auto rightNode = BvhNode{bvh, objects, mid, end};
+    m_childIndexRight = bvh->getNodes().size();
+    bvh->getNodes().push_back(std::move(rightNode));
 }
 
 auto BvhNode::boundingBox() const noexcept -> const Aabb & {

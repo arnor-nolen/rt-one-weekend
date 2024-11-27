@@ -16,17 +16,6 @@ class BvhNode {
     explicit BvhNode(Bvh *bvh, std::tuple<std::vector<Sphere>> &objects,
                      size_t start, size_t end) noexcept;
 
-    ~BvhNode() = default;
-
-    BvhNode(const BvhNode &) = delete;
-    BvhNode(BvhNode &&other) noexcept = default;
-
-    auto operator=(const BvhNode &) -> BvhNode & = delete;
-    auto operator=(BvhNode &&other) noexcept -> BvhNode & = default;
-
-    [[nodiscard]]
-    auto hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>;
-
     [[nodiscard]]
     auto boundingBox() const noexcept -> const Aabb &;
 
@@ -50,12 +39,9 @@ class BvhNode {
     size_t m_childIndexLeft{std::numeric_limits<size_t>::max()};
     size_t m_childIndexRight{std::numeric_limits<size_t>::max()};
 
-    const Sphere *m_leftSphere{nullptr};
-    const Sphere *m_rightSphere{nullptr};
+    const Sphere *m_sphere{nullptr};
 
     Aabb m_boundingBox;
-
-    Bvh *m_bvh{nullptr};
 
     friend Bvh;
 };
@@ -66,16 +52,6 @@ class Bvh {
     explicit Bvh(HittableList &list) noexcept;
     explicit Bvh(std::tuple<std::vector<Sphere>> &objects, size_t start,
                  size_t end) noexcept;
-
-    ~Bvh() = default;
-
-    Bvh(const Bvh &) = delete;
-    Bvh(Bvh &&other) noexcept;
-
-    auto operator=(const Bvh &) -> Bvh & = delete;
-    auto operator=(Bvh &&other) noexcept -> Bvh &;
-
-    void swap(Bvh &other) noexcept;
 
     [[nodiscard]]
     auto hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>;
@@ -93,7 +69,6 @@ class Bvh {
     std::vector<BvhNode> m_nodes;
 };
 
-static_assert(concepts::Hittable<BvhNode>);
 static_assert(concepts::Hittable<Bvh>);
 
 #endif

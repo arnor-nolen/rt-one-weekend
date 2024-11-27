@@ -71,6 +71,31 @@ class Camera {
 
 void Camera::render(const concepts::Hittable auto &world) {
     const auto numOfPixels = m_image.width() * m_image.height();
+
+#if DEBUG
+    for (auto pixelId = 0; pixelId < numOfPixels; ++pixelId) {
+        auto pixelColor = Color{0, 0, 0};
+
+        auto idxW = pixelId / m_image.height();
+        auto idxH = pixelId % m_image.height();
+
+        for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel;
+             ++sample) {
+            auto ray = getRay(idxW, idxH);
+            pixelColor +=
+                convertColor(rayColor(ray, m_cameraProps.maxDepth, world),
+                             m_cameraProps.samplesPerPixel);
+        }
+
+        auto colorArray =
+            std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.getX()),
+                                   static_cast<uint8_t>(pixelColor.getY()),
+                                   static_cast<uint8_t>(pixelColor.getZ())};
+
+        m_image.draw_point(static_cast<int>(idxW), static_cast<int>(idxH),
+                           colorArray.data());
+    }
+#else
     const auto range = std::ranges::views::iota(0, numOfPixels);
 
     parallelize(
@@ -99,6 +124,7 @@ void Camera::render(const concepts::Hittable auto &world) {
             return true;
         },
         std::thread::hardware_concurrency());
+#endif
 
     // Windows doesn't play nicely with save_png and
     // std::filesystem, so we have to convert twice.

@@ -115,6 +115,9 @@ endif()
 # Add "include" to the include path.
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
+# Add debug macro.
+target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
+
 # Link libraries.
 target_link_libraries(${PROJECT_NAME} Threads::Threads fmt::fmt cimg::cimg)
 
