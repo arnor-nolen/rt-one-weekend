@@ -1,6 +1,7 @@
 #ifndef AABB_HPP
 #define AABB_HPP
 
+#include <axis.hpp>
 #include <interval.hpp>
 #include <ray.hpp>
 #include <vec3.hpp>
@@ -17,7 +18,7 @@ class Aabb {
     explicit Aabb(const Aabb &box1, const Aabb &box2) noexcept;
 
     [[nodiscard]]
-    auto axisInterval(int n) const noexcept -> const Interval &;
+    auto axisInterval(Axis axis) const noexcept -> const Interval &;
 
     [[nodiscard]]
     auto hit(const Ray &ray, const Interval &rayT) const noexcept -> bool;
@@ -32,7 +33,7 @@ class Aabb {
     auto getZ() const noexcept -> Interval;
 
     [[nodiscard]]
-    auto longestAxis() const noexcept -> int;
+    auto longestAxis() const noexcept -> Axis;
 
   private:
     Interval m_x;

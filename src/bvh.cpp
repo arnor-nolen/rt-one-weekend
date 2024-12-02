@@ -103,11 +103,7 @@ void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
                          spheres[objectIndex].boundingBox()};
             }
 
-            const int axis = currentNode.m_boundingBox.longestAxis();
-
-            const auto comparator = (axis == 0)   ? BvhNode::boxXCompare
-                                    : (axis == 1) ? BvhNode::boxYCompare
-                                                  : BvhNode::boxZCompare;
+            const Axis axis = currentNode.m_boundingBox.longestAxis();
 
             if (objectCount == 1) {
                 currentNode.m_sphere = &spheres[objectStart];
@@ -116,7 +112,9 @@ void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
 
             std::sort(std::begin(spheres) + static_cast<ptrdiff_t>(objectStart),
                       std::begin(spheres) + static_cast<ptrdiff_t>(objectEnd),
-                      comparator);
+                      [&](const auto &elem1, const auto &elem2) {
+                          return BvhNode::boxCompare(elem1, elem2, axis);
+                      });
 
             const auto mid = objectStart + objectCount / 2;
 
@@ -145,26 +143,11 @@ auto BvhNode::boundingBox() const noexcept -> const Aabb & {
 }
 
 auto BvhNode::boxCompare(const Sphere &hittableA, const Sphere &hittableB,
-                         int axisIndex) noexcept -> bool {
-    const auto aAxisInterval = hittableA.boundingBox().axisInterval(axisIndex);
-    const auto bAxisInterval = hittableB.boundingBox().axisInterval(axisIndex);
+                         Axis axis) noexcept -> bool {
+    const auto aAxisInterval = hittableA.boundingBox().axisInterval(axis);
+    const auto bAxisInterval = hittableB.boundingBox().axisInterval(axis);
 
     return aAxisInterval.getMin() < bAxisInterval.getMin();
-}
-
-auto BvhNode::boxXCompare(const Sphere &hittableA,
-                          const Sphere &hittableB) noexcept -> bool {
-    return boxCompare(hittableA, hittableB, 0);
-}
-
-auto BvhNode::boxYCompare(const Sphere &hittableA,
-                          const Sphere &hittableB) noexcept -> bool {
-    return boxCompare(hittableA, hittableB, 1);
-}
-
-auto BvhNode::boxZCompare(const Sphere &hittableA,
-                          const Sphere &hittableB) noexcept -> bool {
-    return boxCompare(hittableA, hittableB, 2);
 }
 
 auto Bvh::getNodes() const noexcept -> const std::vector<BvhNode> & {

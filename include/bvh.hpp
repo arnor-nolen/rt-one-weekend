@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <aabb.hpp>
+#include <axis.hpp>
 #include <hittable.hpp>
 #include <sphere.hpp>
 
@@ -20,19 +21,7 @@ class BvhNode {
   private:
     [[nodiscard]]
     static auto boxCompare(const Sphere &hittableA, const Sphere &hittableB,
-                           int axisIndex) noexcept -> bool;
-
-    [[nodiscard]]
-    static auto boxXCompare(const Sphere &hittableA,
-                            const Sphere &hittableB) noexcept -> bool;
-
-    [[nodiscard]]
-    static auto boxYCompare(const Sphere &hittableA,
-                            const Sphere &hittableB) noexcept -> bool;
-
-    [[nodiscard]]
-    static auto boxZCompare(const Sphere &hittableA,
-                            const Sphere &hittableB) noexcept -> bool;
+                           Axis axis) noexcept -> bool;
 
     size_t m_childIndexLeft{std::numeric_limits<size_t>::max()};
     size_t m_childIndexRight{std::numeric_limits<size_t>::max()};

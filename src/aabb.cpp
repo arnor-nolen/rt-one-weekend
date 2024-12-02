@@ -26,13 +26,13 @@ Aabb::Aabb(const Aabb &box1, const Aabb &box2) noexcept
     : m_x{box1.getX(), box2.getX()}, m_y{box1.getY(), box2.getY()},
       m_z{box1.getZ(), box2.getZ()} {}
 
-auto Aabb::axisInterval(int n) const noexcept -> const Interval & {
-    switch (n) {
-    case 0:
+auto Aabb::axisInterval(Axis axis) const noexcept -> const Interval & {
+    switch (axis) {
+    case Axis::X:
         return m_x;
-    case 1:
+    case Axis::Y:
         return m_y;
-    case 2:
+    case Axis::Z:
         return m_z;
     default:
         halt("Unknown enum value.");
@@ -43,8 +43,8 @@ auto Aabb::hit(const Ray &ray, const Interval &rayT) const noexcept -> bool {
     const Point3 &rayOrig = ray.origin();
     const Vec3 &rayDir = ray.direction();
 
-    for (int axisIdx = 0; axisIdx < 3; ++axisIdx) {
-        const Interval &axis = axisInterval(axisIdx);
+    for (uint8_t axisIdx = 0; axisIdx < 3; ++axisIdx) {
+        const Interval &axis = axisInterval(Axis{axisIdx});
         const double axisDirInv = 1.0 / rayDir[axisIdx];
 
         const auto [time0, time1] =
@@ -68,10 +68,10 @@ auto Aabb::getY() const noexcept -> Interval { return m_y; }
 
 auto Aabb::getZ() const noexcept -> Interval { return m_z; }
 
-auto Aabb::longestAxis() const noexcept -> int {
+auto Aabb::longestAxis() const noexcept -> Axis {
     if (m_x.size() > m_y.size()) {
-        return m_x.size() > m_z.size() ? 0 : 2;
+        return m_x.size() > m_z.size() ? Axis{0u} : Axis{2u};
     }
 
-    return m_y.size() > m_z.size() ? 1 : 2;
+    return m_y.size() > m_z.size() ? Axis{1u} : Axis{2u};
 }
