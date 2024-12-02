@@ -51,9 +51,6 @@ class Bvh {
     explicit Bvh(std::tuple<std::vector<Sphere>> &objects, size_t start,
                  size_t end) noexcept;
 
-    void initializeNodes(std::tuple<std::vector<Sphere>> &objects, size_t start,
-                         size_t end) noexcept;
-
     [[nodiscard]]
     auto hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>;
 
@@ -67,6 +64,9 @@ class Bvh {
     auto getNodes() noexcept -> std::vector<BvhNode> &;
 
   private:
+    void initializeNodes(std::tuple<std::vector<Sphere>> &objects, size_t start,
+                         size_t end) noexcept;
+
     std::vector<BvhNode> m_nodes;
 };
 
