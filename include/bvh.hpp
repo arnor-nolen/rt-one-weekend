@@ -13,8 +13,6 @@ class HittableList;
 class BvhNode {
   public:
     explicit BvhNode() noexcept = default;
-    explicit BvhNode(Bvh *bvh, std::tuple<std::vector<Sphere>> &objects,
-                     size_t start, size_t end) noexcept;
 
     [[nodiscard]]
     auto boundingBox() const noexcept -> const Aabb &;
@@ -41,7 +39,7 @@ class BvhNode {
 
     const Sphere *m_sphere{nullptr};
 
-    Aabb m_boundingBox;
+    Aabb m_boundingBox{Aabb::s_empty};
 
     friend Bvh;
 };
@@ -52,6 +50,9 @@ class Bvh {
     explicit Bvh(HittableList &list) noexcept;
     explicit Bvh(std::tuple<std::vector<Sphere>> &objects, size_t start,
                  size_t end) noexcept;
+
+    void initializeNodes(std::tuple<std::vector<Sphere>> &objects, size_t start,
+                         size_t end) noexcept;
 
     [[nodiscard]]
     auto hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>;

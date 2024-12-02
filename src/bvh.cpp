@@ -1,11 +1,19 @@
 #include <bvh.hpp>
 
 #include <algorithm>
-// #include <bit>
 #include <cassert>
 #include <stack>
 
 #include <hittable_list.hpp>
+
+namespace {
+
+struct ObjectRange {
+    size_t start;
+    size_t end;
+};
+
+} // namespace
 
 Bvh::Bvh(HittableList &list) noexcept
     : Bvh{list.getObjects(), 0,
@@ -13,20 +21,13 @@ Bvh::Bvh(HittableList &list) noexcept
 
 Bvh::Bvh(std::tuple<std::vector<Sphere>> &objects, size_t start,
          size_t end) noexcept {
-    auto bvhNode = BvhNode{this, objects, start, end};
-    m_nodes.push_back(bvhNode);
+    initializeNodes(objects, start, end);
 }
 
 auto Bvh::hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord> {
     assert(!m_nodes.empty());
 
-    const auto *currentNode = &m_nodes.back();
-
-    // auto container = std::vector<const BvhNode *>{};
-    // const auto treeDepth =
-    // static_cast<size_t>(std::bit_width(m_nodes.size()));
-    //
-    // container.reserve(treeDepth);
+    const auto *currentNode = &m_nodes.front();
 
     auto stack = std::stack<const BvhNode *, std::vector<const BvhNode *>>{};
     stack.push(currentNode);
@@ -65,43 +66,78 @@ auto Bvh::boundingBox() const noexcept -> const Aabb & {
     return m_nodes.back().boundingBox();
 }
 
-BvhNode::BvhNode(Bvh *bvh, std::tuple<std::vector<Sphere>> &objects,
-                 size_t start, size_t end) noexcept
-    : m_boundingBox{Aabb::s_empty} {
-
-    const size_t objectSpan = end - start;
-
-    assert(objectSpan != 0);
+void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
+                          size_t start, size_t end) noexcept {
 
     auto &spheres = std::get<std::vector<Sphere>>(objects);
 
-    for (size_t objectIndex = start; objectIndex < end; ++objectIndex) {
-        m_boundingBox = Aabb{m_boundingBox, spheres[objectIndex].boundingBox()};
+    auto objectRange = std::vector<ObjectRange>{};
+
+    const size_t maxNodes = (end - start) * 2;
+
+    m_nodes.reserve(maxNodes);
+    objectRange.reserve(maxNodes);
+
+    size_t currentNodeIndex = m_nodes.size();
+    assert(currentNodeIndex == 0u);
+
+    m_nodes.emplace_back();
+    objectRange.emplace_back(start, end);
+
+    auto stack = std::stack<size_t, std::vector<size_t>>{};
+    stack.push(currentNodeIndex);
+
+    while (!stack.empty()) {
+        while (!m_nodes[currentNodeIndex].m_sphere) {
+
+            auto &currentNode = m_nodes[currentNodeIndex];
+
+            const auto [objectStart, objectEnd] = objectRange[currentNodeIndex];
+
+            size_t objectCount = objectEnd - objectStart;
+
+            for (size_t objectIndex = objectStart; objectIndex < objectEnd;
+                 ++objectIndex) {
+                currentNode.m_boundingBox =
+                    Aabb{currentNode.m_boundingBox,
+                         spheres[objectIndex].boundingBox()};
+            }
+
+            const int axis = currentNode.m_boundingBox.longestAxis();
+
+            const auto comparator = (axis == 0)   ? BvhNode::boxXCompare
+                                    : (axis == 1) ? BvhNode::boxYCompare
+                                                  : BvhNode::boxZCompare;
+
+            if (objectCount == 1) {
+                currentNode.m_sphere = &spheres[objectStart];
+                continue;
+            }
+
+            std::sort(std::begin(spheres) + static_cast<ptrdiff_t>(objectStart),
+                      std::begin(spheres) + static_cast<ptrdiff_t>(objectEnd),
+                      comparator);
+
+            const auto mid = objectStart + objectCount / 2;
+
+            currentNode.m_childIndexLeft = m_nodes.size();
+            m_nodes.emplace_back();
+            objectRange.emplace_back(objectStart, mid);
+
+            currentNode.m_childIndexRight = m_nodes.size();
+            m_nodes.emplace_back();
+            objectRange.emplace_back(mid, objectEnd);
+
+            stack.push(currentNodeIndex);
+
+            currentNodeIndex = currentNode.m_childIndexLeft;
+        }
+
+        currentNodeIndex = stack.top();
+        stack.pop();
+
+        currentNodeIndex = m_nodes[currentNodeIndex].m_childIndexRight;
     }
-
-    const int axis = m_boundingBox.longestAxis();
-
-    const auto comparator = (axis == 0)   ? boxXCompare
-                            : (axis == 1) ? boxYCompare
-                                          : boxZCompare;
-
-    if (objectSpan == 1) {
-        m_sphere = &spheres[start];
-        return;
-    }
-
-    std::sort(std::begin(spheres) + static_cast<ptrdiff_t>(start),
-              std::begin(spheres) + static_cast<ptrdiff_t>(end), comparator);
-
-    const auto mid = start + objectSpan / 2;
-
-    auto leftNode = BvhNode{bvh, objects, start, mid};
-    m_childIndexLeft = bvh->getNodes().size();
-    bvh->getNodes().push_back(std::move(leftNode));
-
-    auto rightNode = BvhNode{bvh, objects, mid, end};
-    m_childIndexRight = bvh->getNodes().size();
-    bvh->getNodes().push_back(std::move(rightNode));
 }
 
 auto BvhNode::boundingBox() const noexcept -> const Aabb & {
