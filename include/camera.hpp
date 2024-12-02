@@ -3,8 +3,11 @@
 
 #include <filesystem>
 #include <limits>
+
+#if !DEBUG
 #include <ranges>
 #include <thread>
+#endif
 
 #include <fmt/format.h>
 #include <impl/cimg.hpp>
