@@ -95,8 +95,7 @@ void Camera::render(const concepts::Hittable auto &world) {
                                    static_cast<uint8_t>(pixelColor.getY()),
                                    static_cast<uint8_t>(pixelColor.getZ())};
 
-        m_image.draw_point(static_cast<int>(idxW), static_cast<int>(idxH),
-                           colorArray.data());
+        m_image.draw_point(idxW, idxH, colorArray.data());
     }
 #else
     const auto range = std::ranges::views::iota(0, numOfPixels);

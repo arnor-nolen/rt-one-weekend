@@ -9,13 +9,15 @@ Checks: >
   -readability-uppercase-literal-suffix,
   -hicpp-uppercase-literal-suffix,
   -readability-redundant-member-init,
+  -readability-math-missing-parentheses,
 
   -bugprone-easily-swappable-parameters,
   -altera-id-dependent-backward-branch,
   -cppcoreguidelines-avoid-magic-numbers,
   -readability-magic-numbers,
   -altera-struct-pack-align,
-  -misc-const-correctness
+  -misc-const-correctness,
+  -misc-include-cleaner
 CheckOptions:
   - key: readability-identifier-naming.TypedefCase
     value: CamelCase
