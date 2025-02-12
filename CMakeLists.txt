@@ -97,11 +97,11 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-# Set C++ standard.
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
-set_target_properties(
-  ${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF
-)
+# Set C++ standard. Doesn't work.
+# target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+# set_target_properties(
+#   ${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF
+# )
 
 # Enable link-time optimizations if supported by compiler.
 include(CheckIPOSupported)
