@@ -49,26 +49,23 @@ template <typename F1>
 void parallelize(std::ranges::input_range auto range, const F1 &funcCalc,
                  const size_t threads) {
 
-    const size_t threadDistance = range.size() / threads;
-    auto jthreads = std::vector<std::jthread>{};
-
     const auto chunkMapReduce =
         [&funcCalc](std::ranges::input_range auto chunkRange) {
             for (const auto &elem : chunkRange) {
                 funcCalc(elem);
             }
+
+            return true;
         };
 
-    auto threadStart = range.begin();
+    const auto spawnJthread =
+        [&chunkMapReduce](std::ranges::input_range auto subrange) {
+            return std::jthread{chunkMapReduce, subrange};
+        };
 
-    for (size_t threadId = 0u; threadId < threads - 1; ++threadId) {
-        jthreads.emplace_back(
-            chunkMapReduce,
-            std::ranges::subrange(threadStart, threadStart + threadDistance));
-        threadStart += threadDistance;
-    }
-    jthreads.emplace_back(chunkMapReduce,
-                          std::ranges::subrange(threadStart, range.end()));
+    // Figure out how to split into evenly sized bins.
+    range | std::views::chunk(range.size() / threads) |
+        std::views::transform(spawnJthread) | std::ranges::to<std::vector>();
 }
 
 #endif

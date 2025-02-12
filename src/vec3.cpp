@@ -72,7 +72,7 @@ auto Vec3::nearZero() const -> bool {
            (std::fabs(m_vec[2]) < s_epsilon);
 }
 
-constexpr auto fmt::formatter<Vec3>::parse(fmt::format_parse_context &ctx) {
+constexpr auto std::formatter<Vec3>::parse(std::format_parse_context &ctx) {
     return ctx.begin();
 }
 

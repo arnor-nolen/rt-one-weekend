@@ -85,7 +85,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
         camera.render(world);
 
     } catch (const std::exception &e) {
-        fmt::print("Exception: {}.", e.what());
+        std::println("Exception: {}.", e.what());
     }
 
     return EXIT_SUCCESS;

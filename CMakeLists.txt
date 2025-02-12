@@ -37,7 +37,6 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
 # Setting up dependencies (using CONFIG so find_package doesn't conflict with cmake's own
 # findX.cmake).
-find_package(fmt REQUIRED CONFIG)
 find_package(cimg REQUIRED CONFIG)
 find_package(Threads REQUIRED)
 
@@ -97,12 +96,6 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-# Set C++ standard. Doesn't work.
-# target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
-# set_target_properties(
-#   ${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF
-# )
-
 # Enable link-time optimizations if supported by compiler.
 include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_result OUTPUT ipo_output)
@@ -119,7 +112,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 
 # Link libraries.
-target_link_libraries(${PROJECT_NAME} Threads::Threads fmt::fmt cimg::cimg)
+target_link_libraries(${PROJECT_NAME} Threads::Threads cimg::cimg)
 
 # -------------------------------------
 # End of building executables.

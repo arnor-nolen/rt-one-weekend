@@ -3,13 +3,13 @@
 
 #include <filesystem>
 #include <limits>
+#include <print>
 
 #if !DEBUG
 #include <ranges>
 #include <thread>
 #endif
 
-#include <fmt/format.h>
 #include <impl/cimg.hpp>
 
 #include <color.hpp>
@@ -125,7 +125,7 @@ void Camera::render(const concepts::Hittable auto &world) {
     // std::filesystem, so we have to convert twice.
     m_image.save_png(m_cameraProps.outputPath.string().c_str());
 
-    fmt::print("\nImage saved to \"{}\".\n", m_cameraProps.outputPath.string());
+    std::println("\nImage saved to \"{}\".", m_cameraProps.outputPath.string());
 }
 
 auto Camera::rayColor(const Ray &ray, size_t depth,

@@ -2,9 +2,9 @@
 #define VEC3_HPP
 
 #include <array>
+#include <cmath>
 #include <cstddef>
-
-#include <fmt/format.h>
+#include <print>
 
 #include <random.hpp>
 
@@ -56,13 +56,13 @@ using Point3 = Vec3;
 // Vec3 utility functions.
 
 template <>
-class fmt::formatter<Vec3> {
+class std::formatter<Vec3> {
   public:
-    static constexpr auto parse(fmt::format_parse_context &ctx);
+    static constexpr auto parse(std::format_parse_context &ctx);
 
     template <typename Context>
     static constexpr auto format(const Vec3 &vec3, Context &ctx) {
-        return fmt::format_to(ctx.out(), "{} {} {}", vec3[0], vec3[1], vec3[2]);
+        return std::format_to(ctx.out(), "{} {} {}", vec3[0], vec3[1], vec3[2]);
     }
 };
 

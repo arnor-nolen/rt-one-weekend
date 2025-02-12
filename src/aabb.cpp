@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-#include <fmt/format.h>
-
 #include <halt.hpp>
 
 const Aabb Aabb::s_empty =

@@ -1,10 +1,9 @@
 #include <halt.hpp>
 
 #include <exception>
-
-#include <fmt/core.h>
+#include <print>
 
 void halt(std::string_view message) {
-    fmt::print("{}\n", message);
+    std::println("{}", message);
     std::terminate();
 }

@@ -30,7 +30,6 @@ class RtOneWeekend(ConanFile):
     }
 
     def requirements(self):
-        self.requires("fmt/10.1.1")
         self.requires("cimg/3.3.0")
 
     def generate(self):
@@ -40,8 +39,7 @@ class RtOneWeekend(ConanFile):
         tc = CMakeToolchain(self)
         tc.user_presets_path = "ConanPresets.json"
         vars = {}
-        if self.settings.build_type == "Debug":
-            vars["CMAKE_EXPORT_COMPILE_COMMANDS"] = "ON"
+        vars["CMAKE_EXPORT_COMPILE_COMMANDS"] = "ON"
         if tc.generator == "Ninja":
             vars["CMAKE_COLOR_DIAGNOSTICS"] = "ON"
         tc.cache_variables = vars
