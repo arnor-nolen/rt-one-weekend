@@ -53,6 +53,11 @@ class Camera {
     [[nodiscard]]
     auto defocusDiskSample() const -> Point3;
 
+    [[nodiscard]]
+    auto calculatePixelColor(int idxW, int idxH,
+                             const concepts::Hittable auto &world) noexcept
+        -> std::array<uint8_t, 3>;
+
     CameraProps m_cameraProps{};
 
     size_t m_imageHeight{};
@@ -72,30 +77,34 @@ class Camera {
     cimg_library::CImg<uint8_t> m_image{};
 };
 
+auto Camera::calculatePixelColor(int idxW, int idxH,
+                                 const concepts::Hittable auto &world) noexcept
+    -> std::array<uint8_t, 3> {
+    auto pixelColor = Color{0, 0, 0};
+
+    for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel; ++sample) {
+        const auto ray = getRay(idxW, idxH);
+        const auto singleRayColor =
+            rayColor(ray, m_cameraProps.maxDepth, world);
+        pixelColor +=
+            convertColor(singleRayColor, m_cameraProps.samplesPerPixel);
+    }
+
+    return std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.getX()),
+                                  static_cast<uint8_t>(pixelColor.getY()),
+                                  static_cast<uint8_t>(pixelColor.getZ())};
+}
+
 void Camera::render(const concepts::Hittable auto &world) {
     const auto numOfPixels = m_image.width() * m_image.height();
 
 #if DEBUG
     for (auto pixelId = 0; pixelId < numOfPixels; ++pixelId) {
-        auto pixelColor = Color{0, 0, 0};
-
         auto idxW = pixelId / m_image.height();
         auto idxH = pixelId % m_image.height();
 
-        for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel;
-             ++sample) {
-            auto ray = getRay(idxW, idxH);
-            pixelColor +=
-                convertColor(rayColor(ray, m_cameraProps.maxDepth, world),
-                             m_cameraProps.samplesPerPixel);
-        }
-
-        auto colorArray =
-            std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.getX()),
-                                   static_cast<uint8_t>(pixelColor.getY()),
-                                   static_cast<uint8_t>(pixelColor.getZ())};
-
-        m_image.draw_point(idxW, idxH, colorArray.data());
+        const auto color = calculatePixelColor(idxW, idxH, world);
+        m_image.draw_point(idxW, idxH, color.data());
     }
 #else
     const auto range = std::ranges::views::iota(0, numOfPixels);
@@ -103,27 +112,11 @@ void Camera::render(const concepts::Hittable auto &world) {
     parallelize(
         range,
         [&, this](const auto &pixelId) {
-            auto pixelColor = Color{0, 0, 0};
-
             auto idxW = pixelId / m_image.height();
             auto idxH = pixelId % m_image.height();
 
-            for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel;
-                 ++sample) {
-                auto ray = getRay(idxW, idxH);
-                pixelColor +=
-                    convertColor(rayColor(ray, m_cameraProps.maxDepth, world),
-                                 m_cameraProps.samplesPerPixel);
-            }
-
-            auto colorArray =
-                std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.getX()),
-                                       static_cast<uint8_t>(pixelColor.getY()),
-                                       static_cast<uint8_t>(pixelColor.getZ())};
-
-            m_image.draw_point(static_cast<int>(idxW), static_cast<int>(idxH),
-                               colorArray.data());
-            return true;
+            const auto color = calculatePixelColor(idxW, idxH, world);
+            m_image.draw_point(idxW, idxH, color.data());
         },
         std::thread::hardware_concurrency());
 #endif
