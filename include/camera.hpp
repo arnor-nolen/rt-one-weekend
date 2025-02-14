@@ -1,6 +1,8 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+#include <atomic>
+#include <cstdio>
 #include <filesystem>
 #include <limits>
 #include <print>
@@ -56,7 +58,7 @@ class Camera {
     [[nodiscard]]
     auto calculatePixelColor(int idxW, int idxH,
                              const concepts::Hittable auto &world) noexcept
-        -> std::array<uint8_t, 3>;
+        -> Color;
 
     CameraProps m_cameraProps{};
 
@@ -79,7 +81,7 @@ class Camera {
 
 auto Camera::calculatePixelColor(int idxW, int idxH,
                                  const concepts::Hittable auto &world) noexcept
-    -> std::array<uint8_t, 3> {
+    -> Color {
     auto pixelColor = Color{0, 0, 0};
 
     for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel; ++sample) {
@@ -90,35 +92,37 @@ auto Camera::calculatePixelColor(int idxW, int idxH,
             convertColor(singleRayColor, m_cameraProps.samplesPerPixel);
     }
 
-    return std::array<uint8_t, 3>{static_cast<uint8_t>(pixelColor.getX()),
-                                  static_cast<uint8_t>(pixelColor.getY()),
-                                  static_cast<uint8_t>(pixelColor.getZ())};
+    return pixelColor;
 }
 
 void Camera::render(const concepts::Hittable auto &world) {
     const auto numOfPixels = m_image.width() * m_image.height();
 
-#if DEBUG
-    for (auto pixelId = 0; pixelId < numOfPixels; ++pixelId) {
-        auto idxW = pixelId / m_image.height();
-        auto idxH = pixelId % m_image.height();
+    auto progress = std::atomic<size_t>{0};
+
+    const auto lambda = [&, this](const auto &pixelId) {
+        const auto idxW = pixelId / m_image.height();
+        const auto idxH = pixelId % m_image.height();
 
         const auto color = calculatePixelColor(idxW, idxH, world);
-        m_image.draw_point(idxW, idxH, color.data());
-    }
-#else
+
+        const auto colorArray = std::array{static_cast<uint8_t>(color.getX()),
+                                           static_cast<uint8_t>(color.getY()),
+                                           static_cast<uint8_t>(color.getZ())};
+        m_image.draw_point(idxW, idxH, colorArray.data());
+
+        std::print("\rPixels processed: {}/{}.", ++progress, numOfPixels);
+
+        [[maybe_unused]]
+        const auto flushResult = std::fflush(stdout);
+    };
+
     const auto range = std::ranges::views::iota(0, numOfPixels);
 
-    parallelize(
-        range,
-        [&, this](const auto &pixelId) {
-            auto idxW = pixelId / m_image.height();
-            auto idxH = pixelId % m_image.height();
-
-            const auto color = calculatePixelColor(idxW, idxH, world);
-            m_image.draw_point(idxW, idxH, color.data());
-        },
-        std::thread::hardware_concurrency());
+#if DEBUG
+    std::ranges::for_each(range, lambda);
+#else
+    parallelizeForEach(range, lambda, std::thread::hardware_concurrency());
 #endif
 
     // Windows doesn't play nicely with save_png and
