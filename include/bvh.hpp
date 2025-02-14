@@ -1,17 +1,18 @@
 #ifndef BVH_HPP
 #define BVH_HPP
 
-#include <vector>
-
 #include <aabb.hpp>
 #include <axis.hpp>
 #include <hittable.hpp>
 #include <sphere.hpp>
 
+#include <vector>
+
 class Bvh;
 class HittableList;
 
-class BvhNode {
+class BvhNode
+{
   public:
     explicit BvhNode() noexcept = default;
 
@@ -20,7 +21,8 @@ class BvhNode {
 
   private:
     [[nodiscard]]
-    static auto boxCompare(const Sphere &hittableA, const Sphere &hittableB,
+    static auto boxCompare(const Sphere &hittableA,
+                           const Sphere &hittableB,
                            Axis axis) noexcept -> bool;
 
     size_t m_childIndexLeft{std::numeric_limits<size_t>::max()};
@@ -33,11 +35,13 @@ class BvhNode {
     friend Bvh;
 };
 
-class Bvh {
+class Bvh
+{
   public:
     explicit Bvh() noexcept = default;
     explicit Bvh(HittableList &list) noexcept;
-    explicit Bvh(std::tuple<std::vector<Sphere>> &objects, size_t start,
+    explicit Bvh(std::tuple<std::vector<Sphere>> &objects,
+                 size_t start,
                  size_t end) noexcept;
 
     [[nodiscard]]
@@ -53,7 +57,8 @@ class Bvh {
     auto getNodes() noexcept -> std::vector<BvhNode> &;
 
   private:
-    void initializeNodes(std::tuple<std::vector<Sphere>> &objects, size_t start,
+    void initializeNodes(std::tuple<std::vector<Sphere>> &objects,
+                         size_t start,
                          size_t end) noexcept;
 
     std::vector<BvhNode> m_nodes;

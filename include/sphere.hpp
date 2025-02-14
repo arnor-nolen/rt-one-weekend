@@ -1,25 +1,29 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
 
-#include <optional>
-
 #include <aabb.hpp>
 #include <hittable.hpp>
 #include <material.hpp>
 #include <vec3.hpp>
 
+#include <optional>
+
 class Interval;
 
-class Sphere {
+class Sphere
+{
   public:
-    explicit Sphere(const Point3 &center, double radius,
+    explicit Sphere(const Point3 &center,
+                    double radius,
                     MaterialVariant material) noexcept;
-    explicit Sphere(const Point3 &center1, const Point3 &center2, double radius,
+    explicit Sphere(const Point3 &center1,
+                    const Point3 &center2,
+                    double radius,
                     MaterialVariant material) noexcept;
 
     [[nodiscard]]
-    auto hit(const Ray &ray,
-             Interval rayT) const noexcept -> std::optional<HitRecord>;
+    auto hit(const Ray &ray, Interval rayT) const noexcept
+        -> std::optional<HitRecord>;
 
     [[nodiscard]]
     auto boundingBox() const noexcept -> const Aabb &;

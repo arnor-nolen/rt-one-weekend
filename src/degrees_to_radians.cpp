@@ -2,6 +2,7 @@
 
 #include <numbers>
 
-auto degreesToRadians(double degrees) noexcept -> double {
+auto degreesToRadians(double degrees) noexcept -> double
+{
     return degrees * std::numbers::pi / 180.0;
 }

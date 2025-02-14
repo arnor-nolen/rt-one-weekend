@@ -3,7 +3,8 @@
 
 #include <utility>
 
-class Interval {
+class Interval
+{
   public:
     static const Interval s_empty;
     static const Interval s_universe;

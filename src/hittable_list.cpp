@@ -4,20 +4,24 @@
 #include <interval.hpp>
 #include <sphere.hpp>
 
-void HittableList::clear() {
+void HittableList::clear()
+{
     std::apply([](auto &...elems) { (elems.clear(), ...); }, m_objects);
 }
 
-auto HittableList::hit(const Ray &ray,
-                       Interval rayT) const -> std::optional<HitRecord> {
+auto HittableList::hit(const Ray &ray, Interval rayT) const
+    -> std::optional<HitRecord>
+{
 
     auto record = std::optional<HitRecord>{};
     auto closestSoFar = rayT.getMax();
 
-    const auto vectorLambda = [&](const auto &object) {
-        auto tempRecord =
-            object.hit(ray, Interval{rayT.getMin(), closestSoFar});
-        if (tempRecord) {
+    const auto vectorLambda = [&](const auto &object)
+    {
+        auto tempRecord
+            = object.hit(ray, Interval{rayT.getMin(), closestSoFar});
+        if (tempRecord)
+        {
             closestSoFar = tempRecord->time;
             record = tempRecord;
         }
@@ -28,15 +32,18 @@ auto HittableList::hit(const Ray &ray,
     return record;
 }
 
-auto HittableList::boundingBox() const noexcept -> const Aabb & {
+auto HittableList::boundingBox() const noexcept -> const Aabb &
+{
     return m_boundingBox;
 }
 
-auto HittableList::getObjects() const noexcept -> const HittableTuple & {
+auto HittableList::getObjects() const noexcept -> const HittableTuple &
+{
     return m_objects;
 }
 
-auto HittableList::getObjects() noexcept -> HittableTuple & {
+auto HittableList::getObjects() noexcept -> HittableTuple &
+{
     return m_objects;
 }
 

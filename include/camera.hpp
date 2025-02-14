@@ -1,6 +1,14 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+#include <color.hpp>
+#include <hittable.hpp>
+#include <map_reduce.hpp>
+#include <material.hpp>
+#include <sphere.hpp>
+
+#include <impl/cimg.hpp>
+
 #include <atomic>
 #include <cstdio>
 #include <filesystem>
@@ -12,15 +20,8 @@
 #include <thread>
 #endif
 
-#include <impl/cimg.hpp>
-
-#include <color.hpp>
-#include <hittable.hpp>
-#include <map_reduce.hpp>
-#include <material.hpp>
-#include <sphere.hpp>
-
-struct CameraProps {
+struct CameraProps
+{
     std::filesystem::path outputPath;
     double aspectRatio = 1.0;
     size_t imageWidth = 100;
@@ -34,7 +35,8 @@ struct CameraProps {
     double focusDist = 10.0;
 };
 
-class Camera {
+class Camera
+{
   public:
     explicit Camera(CameraProps cameraProps);
 
@@ -43,7 +45,8 @@ class Camera {
   private:
     void initialize();
 
-    auto rayColor(const Ray &ray, size_t depth,
+    auto rayColor(const Ray &ray,
+                  size_t depth,
                   const concepts::Hittable auto &world) const -> Color;
 
     [[nodiscard]]
@@ -56,8 +59,10 @@ class Camera {
     auto defocusDiskSample() const -> Point3;
 
     [[nodiscard]]
-    auto calculatePixelColor(int idxW, int idxH,
-                             const concepts::Hittable auto &world) noexcept
+    auto
+    calculatePixelColor(int idxW,
+                        int idxH,
+                        const concepts::Hittable auto &world) const noexcept
         -> Color;
 
     CameraProps m_cameraProps{};
@@ -79,28 +84,34 @@ class Camera {
     cimg_library::CImg<uint8_t> m_image{};
 };
 
-auto Camera::calculatePixelColor(int idxW, int idxH,
-                                 const concepts::Hittable auto &world) noexcept
-    -> Color {
+auto Camera::calculatePixelColor(
+    int idxW,
+    int idxH,
+    const concepts::Hittable auto &world) const noexcept -> Color
+{
+
     auto pixelColor = Color{0, 0, 0};
 
-    for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel; ++sample) {
+    for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel; ++sample)
+    {
         const auto ray = getRay(idxW, idxH);
-        const auto singleRayColor =
-            rayColor(ray, m_cameraProps.maxDepth, world);
-        pixelColor +=
-            convertColor(singleRayColor, m_cameraProps.samplesPerPixel);
+        const auto singleRayColor
+            = rayColor(ray, m_cameraProps.maxDepth, world);
+        pixelColor
+            += convertColor(singleRayColor, m_cameraProps.samplesPerPixel);
     }
 
     return pixelColor;
 }
 
-void Camera::render(const concepts::Hittable auto &world) {
+void Camera::render(const concepts::Hittable auto &world)
+{
     const auto numOfPixels = m_image.width() * m_image.height();
 
     auto progress = std::atomic<size_t>{0};
 
-    const auto lambda = [&, this](const auto &pixelId) {
+    const auto lambda = [&, this](const auto &pixelId)
+    {
         const auto idxW = pixelId / m_image.height();
         const auto idxH = pixelId % m_image.height();
 
@@ -109,12 +120,14 @@ void Camera::render(const concepts::Hittable auto &world) {
         const auto colorArray = std::array{static_cast<uint8_t>(color.getX()),
                                            static_cast<uint8_t>(color.getY()),
                                            static_cast<uint8_t>(color.getZ())};
+
         m_image.draw_point(idxW, idxH, colorArray.data());
 
         std::print("\rPixels processed: {}/{}.", ++progress, numOfPixels);
 
         [[maybe_unused]]
-        const auto flushResult = std::fflush(stdout);
+        const auto flushResult
+            = std::fflush(stdout);
     };
 
     const auto range = std::ranges::views::iota(0, numOfPixels);
@@ -132,34 +145,39 @@ void Camera::render(const concepts::Hittable auto &world) {
     std::println("\nImage saved to \"{}\".", m_cameraProps.outputPath.string());
 }
 
-auto Camera::rayColor(const Ray &ray, size_t depth,
-                      const concepts::Hittable auto &world) const -> Color {
+auto Camera::rayColor(const Ray &ray,
+                      size_t depth,
+                      const concepts::Hittable auto &world) const -> Color
+{
+
     auto outputColor = Color{1.0, 1.0, 1.0};
     auto currentRay = ray;
 
-    for (size_t i = 0u; i < depth; ++i) {
+    for (size_t i = 0u; i < depth; ++i)
+    {
         const auto record = world.hit(
             currentRay,
             Interval{0.001, +std::numeric_limits<double>::infinity()});
 
         // Color background.
-        if (!record) {
+        if (!record)
+        {
             Vec3 unitDirection = unitVector(currentRay.direction());
             const auto currentValue = 0.5 * (unitDirection.getY() + 1.0);
 
-            const auto skyColor = (1.0 - currentValue) * Color{1.0, 1.0, 1.0} +
-                                  currentValue * Color{0.5, 0.7, 1.0};
+            const auto skyColor = (1.0 - currentValue) * Color{1.0, 1.0, 1.0}
+                                + currentValue * Color{0.5, 0.7, 1.0};
 
             return outputColor * skyColor;
         }
 
-        const auto scatterInfo = std::visit(
-            [&](const concepts::Material auto &elem) {
-                return elem.scatter(currentRay, *record);
-            },
-            record->material);
+        const auto scatterInfo
+            = std::visit([&](const concepts::Material auto &elem)
+                         { return elem.scatter(currentRay, *record); },
+                         record->material);
 
-        if (!scatterInfo) {
+        if (!scatterInfo)
+        {
             return Color{0, 0, 0};
         }
 

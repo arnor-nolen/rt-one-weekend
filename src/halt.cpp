@@ -3,7 +3,8 @@
 #include <exception>
 #include <print>
 
-void halt(std::string_view message) {
+void halt(std::string_view message)
+{
     std::println("{}", message);
     std::terminate();
 }

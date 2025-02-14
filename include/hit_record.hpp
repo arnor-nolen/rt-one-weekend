@@ -6,7 +6,8 @@
 
 class Ray;
 
-struct HitRecord {
+struct HitRecord
+{
     Point3 point{};
     Vec3 normal{};
     MaterialVariant material;
@@ -14,7 +15,8 @@ struct HitRecord {
     bool frontFace{};
 };
 
-void setFaceNormal(HitRecord &record, const Ray &ray,
+void setFaceNormal(HitRecord &record,
+                   const Ray &ray,
                    const Vec3 &outwardNormal) noexcept;
 
 #endif

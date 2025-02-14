@@ -7,7 +7,8 @@ using Color = Vec3;
 
 auto convertColor(const Color &color, size_t samplesPerPixel) noexcept -> Color;
 
-inline auto linearToGamma(double linearComponent) -> double {
+inline auto linearToGamma(double linearComponent) -> double
+{
     return std::sqrt(linearComponent);
 }
 

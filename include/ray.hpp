@@ -3,11 +3,13 @@
 
 #include <vec3.hpp>
 
-class Ray {
+class Ray
+{
   public:
     explicit Ray() noexcept = default;
     explicit Ray(const Point3 &origin, const Vec3 &direction) noexcept;
-    explicit Ray(const Point3 &origin, const Vec3 &direction,
+    explicit Ray(const Point3 &origin,
+                 const Vec3 &direction,
                  double time) noexcept;
 
     [[nodiscard]]

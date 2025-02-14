@@ -1,14 +1,16 @@
-#include <cstddef>
-#include <cstdlib>
-
 #include <bvh.hpp>
 #include <camera.hpp>
 #include <color.hpp>
 #include <hittable_list.hpp>
 #include <material.hpp>
 
-auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
-    try {
+#include <cstddef>
+#include <cstdlib>
+
+auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
+{
+    try
+    {
         static constexpr auto s_aspectRatio = 16.0 / 9.0;
         static constexpr size_t s_imageWidth = 1200u;
         static constexpr size_t s_samplesPerPixel = 500u;
@@ -23,32 +25,43 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
                                               Color{0.5, 0.5, 0.5}};
         world.add<Sphere>(Point3{0.0, -1000.0, 0.0}, 1000.0, materialGround);
 
-        for (int coordA = -11; coordA < 11; ++coordA) {
-            for (int coordB = -11; coordB < 11; ++coordB) {
+        for (int coordA = -11; coordA < 11; ++coordA)
+        {
+            for (int coordB = -11; coordB < 11; ++coordB)
+            {
                 const auto chooseMat = randomDouble();
-                auto center = Point3{coordA + 0.9 * randomDouble(), 0.2,
+                auto center = Point3{coordA + 0.9 * randomDouble(),
+                                     0.2,
                                      coordB + 0.9 * randomDouble()};
 
-                if ((center - Point3{4.0, 0.2, 0.0}).length() > 0.9) {
+                if ((center - Point3{4.0, 0.2, 0.0}).length() > 0.9)
+                {
 
-                    if (chooseMat < 0.8) {
+                    if (chooseMat < 0.8)
+                    {
                         const auto albedo = Color::random() * Color::random();
-                        const auto sphereMaterial = MaterialVariant{
-                            std::in_place_type<Lambertian>, albedo};
-                        const auto center2 =
-                            center + Vec3{0, randomDouble(0, 0.5), 0};
+                        const auto sphereMaterial
+                            = MaterialVariant{std::in_place_type<Lambertian>,
+                                              albedo};
+                        const auto center2
+                            = center + Vec3{0, randomDouble(0, 0.5), 0};
                         world.add<Sphere>(center, center2, 0.2, sphereMaterial);
-
-                    } else if (chooseMat < 0.95) {
+                    }
+                    else if (chooseMat < 0.95)
+                    {
                         const auto albedo = Color::random(0.5, 1.0);
                         const auto fuzz = randomDouble(0.0, 0.5);
-                        const auto sphereMaterial = MaterialVariant{
-                            std::in_place_type<Metal>, albedo, fuzz};
+                        const auto sphereMaterial
+                            = MaterialVariant{std::in_place_type<Metal>,
+                                              albedo,
+                                              fuzz};
                         world.add<Sphere>(center, 0.2, sphereMaterial);
-
-                    } else {
-                        const auto sphereMaterial = MaterialVariant{
-                            std::in_place_type<Dielectric>, 1.5};
+                    }
+                    else
+                    {
+                        const auto sphereMaterial
+                            = MaterialVariant{std::in_place_type<Dielectric>,
+                                              1.5};
                         world.add<Sphere>(center, 0.2, sphereMaterial);
                     }
                 }
@@ -63,7 +76,8 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
         world.add<Sphere>(Point3{-4.0, 1.0, 0.0}, 1.0, material2);
 
         auto material3 = MaterialVariant{std::in_place_type<Metal>,
-                                         Color{0.7, 0.6, 0.5}, 0.0};
+                                         Color{0.7, 0.6, 0.5},
+                                         0.0};
         world.add<Sphere>(Point3{4, 1, 0}, 1.0, material3);
 
         world.updateBvh();
@@ -83,8 +97,9 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int {
         auto camera = Camera{cameraProps};
 
         camera.render(world);
-
-    } catch (const std::exception &e) {
+    }
+    catch (const std::exception &e)
+    {
         std::println("Exception: {}.", e.what());
     }
 

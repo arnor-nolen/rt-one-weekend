@@ -1,14 +1,16 @@
 #include <bvh.hpp>
 
+#include <hittable_list.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <stack>
 
-#include <hittable_list.hpp>
+namespace
+{
 
-namespace {
-
-struct ObjectRange {
+struct ObjectRange
+{
     size_t start;
     size_t end;
 };
@@ -16,15 +18,20 @@ struct ObjectRange {
 } // namespace
 
 Bvh::Bvh(HittableList &list) noexcept
-    : Bvh{list.getObjects(), 0,
-          std::get<std::vector<Sphere>>(list.getObjects()).size()} {}
+    : Bvh{list.getObjects(),
+          0,
+          std::get<std::vector<Sphere>>(list.getObjects()).size()}
+{}
 
-Bvh::Bvh(std::tuple<std::vector<Sphere>> &objects, size_t start,
-         size_t end) noexcept {
+Bvh::Bvh(std::tuple<std::vector<Sphere>> &objects,
+         size_t start,
+         size_t end) noexcept
+{
     initializeNodes(objects, start, end);
 }
 
-auto Bvh::hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord> {
+auto Bvh::hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>
+{
     assert(!m_nodes.empty());
 
     const auto *currentNode = &m_nodes.front();
@@ -35,19 +42,23 @@ auto Bvh::hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord> {
     auto hitClosest = std::optional<HitRecord>{};
     auto rayTBeforeHit = rayT;
 
-    while (!stack.empty()) {
-        while (!currentNode->m_sphere &&
-               currentNode->boundingBox().hit(ray, rayTBeforeHit)) {
+    while (!stack.empty())
+    {
+        while (!currentNode->m_sphere
+               && currentNode->boundingBox().hit(ray, rayTBeforeHit))
+        {
 
             stack.push(currentNode);
             currentNode = &m_nodes[currentNode->m_childIndexLeft];
         }
 
-        if (currentNode->m_sphere) {
-            const auto hitCurrent =
-                currentNode->m_sphere->hit(ray, rayTBeforeHit);
+        if (currentNode->m_sphere)
+        {
+            const auto hitCurrent
+                = currentNode->m_sphere->hit(ray, rayTBeforeHit);
 
-            if (hitCurrent) {
+            if (hitCurrent)
+            {
                 rayTBeforeHit = Interval{rayT.getMin(), hitCurrent->time};
                 hitClosest = hitCurrent;
             }
@@ -62,12 +73,15 @@ auto Bvh::hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord> {
     return hitClosest;
 }
 
-auto Bvh::boundingBox() const noexcept -> const Aabb & {
+auto Bvh::boundingBox() const noexcept -> const Aabb &
+{
     return m_nodes.back().boundingBox();
 }
 
 void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
-                          size_t start, size_t end) noexcept {
+                          size_t start,
+                          size_t end) noexcept
+{
 
     auto &spheres = std::get<std::vector<Sphere>>(objects);
 
@@ -87,8 +101,10 @@ void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
     auto stack = std::stack<size_t, std::vector<size_t>>{};
     stack.push(currentNodeIndex);
 
-    while (!stack.empty()) {
-        while (!m_nodes[currentNodeIndex].m_sphere) {
+    while (!stack.empty())
+    {
+        while (!m_nodes[currentNodeIndex].m_sphere)
+        {
 
             auto &currentNode = m_nodes[currentNodeIndex];
 
@@ -97,24 +113,25 @@ void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
             size_t objectCount = objectEnd - objectStart;
 
             for (size_t objectIndex = objectStart; objectIndex < objectEnd;
-                 ++objectIndex) {
-                currentNode.m_boundingBox =
-                    Aabb{currentNode.m_boundingBox,
-                         spheres[objectIndex].boundingBox()};
+                 ++objectIndex)
+            {
+                currentNode.m_boundingBox
+                    = Aabb{currentNode.m_boundingBox,
+                           spheres[objectIndex].boundingBox()};
             }
 
             const Axis axis = currentNode.m_boundingBox.longestAxis();
 
-            if (objectCount == 1) {
+            if (objectCount == 1)
+            {
                 currentNode.m_sphere = &spheres[objectStart];
                 continue;
             }
 
             std::sort(std::begin(spheres) + static_cast<ptrdiff_t>(objectStart),
                       std::begin(spheres) + static_cast<ptrdiff_t>(objectEnd),
-                      [&](const auto &elem1, const auto &elem2) {
-                          return BvhNode::boxCompare(elem1, elem2, axis);
-                      });
+                      [&](const auto &elem1, const auto &elem2)
+                      { return BvhNode::boxCompare(elem1, elem2, axis); });
 
             const auto mid = objectStart + objectCount / 2;
 
@@ -138,19 +155,23 @@ void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
     }
 }
 
-auto BvhNode::boundingBox() const noexcept -> const Aabb & {
+auto BvhNode::boundingBox() const noexcept -> const Aabb &
+{
     return m_boundingBox;
 }
 
-auto BvhNode::boxCompare(const Sphere &hittableA, const Sphere &hittableB,
-                         Axis axis) noexcept -> bool {
+auto BvhNode::boxCompare(const Sphere &hittableA,
+                         const Sphere &hittableB,
+                         Axis axis) noexcept -> bool
+{
     const auto aAxisInterval = hittableA.boundingBox().axisInterval(axis);
     const auto bAxisInterval = hittableB.boundingBox().axisInterval(axis);
 
     return aAxisInterval.getMin() < bAxisInterval.getMin();
 }
 
-auto Bvh::getNodes() const noexcept -> const std::vector<BvhNode> & {
+auto Bvh::getNodes() const noexcept -> const std::vector<BvhNode> &
+{
     return m_nodes;
 }
 

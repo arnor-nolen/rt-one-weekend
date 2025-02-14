@@ -3,13 +3,17 @@
 #include <hit_record.hpp>
 #include <ray.hpp>
 
-Lambertian::Lambertian(const Color &color) noexcept : m_albedo{color} {}
+Lambertian::Lambertian(const Color &color) noexcept
+    : m_albedo{color}
+{}
 
 auto Lambertian::scatter(const Ray &rayIn, const HitRecord &record) const
-    -> std::optional<ScatterInfo> {
+    -> std::optional<ScatterInfo>
+{
     auto scatterDirection = record.normal + randomUnitVector();
 
-    if (scatterDirection.nearZero()) {
+    if (scatterDirection.nearZero())
+    {
         scatterDirection = record.normal;
     }
 
@@ -22,18 +26,23 @@ auto Lambertian::scatter(const Ray &rayIn, const HitRecord &record) const
 }
 
 Metal::Metal(const Color &color, double fuzz) noexcept
-    : m_albedo{color}, m_fuzz{fuzz} {}
+    : m_albedo{color}
+    , m_fuzz{fuzz}
+{}
 
 auto Metal::scatter(const Ray &rayIn, const HitRecord &record) const
-    -> std::optional<ScatterInfo> {
+    -> std::optional<ScatterInfo>
+{
 
-    const auto reflected =
-        reflect(unitVector(rayIn.direction()), record.normal);
+    const auto reflected
+        = reflect(unitVector(rayIn.direction()), record.normal);
 
-    const auto scattered = Ray{
-        record.point, reflected + m_fuzz * randomUnitVector(), rayIn.time()};
+    const auto scattered = Ray{record.point,
+                               reflected + m_fuzz * randomUnitVector(),
+                               rayIn.time()};
 
-    if (dot(scattered.direction(), record.normal) <= 0) {
+    if (dot(scattered.direction(), record.normal) <= 0)
+    {
         return std::nullopt;
     }
 
@@ -44,21 +53,24 @@ auto Metal::scatter(const Ray &rayIn, const HitRecord &record) const
 }
 
 Dielectric::Dielectric(double indexOfRefraction) noexcept
-    : m_indexOfRefraction{indexOfRefraction} {}
+    : m_indexOfRefraction{indexOfRefraction}
+{}
 
 auto Dielectric::scatter(const Ray &rayIn, const HitRecord &record) const
-    -> std::optional<ScatterInfo> {
+    -> std::optional<ScatterInfo>
+{
 
-    auto refractionRatio =
-        record.frontFace ? 1.0 / m_indexOfRefraction : m_indexOfRefraction;
+    auto refractionRatio
+        = record.frontFace ? 1.0 / m_indexOfRefraction : m_indexOfRefraction;
 
     auto unitDirection = unitVector(rayIn.direction());
     auto cosTheta = std::fmin(dot(-unitDirection, record.normal), 1.0);
     auto sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
 
     auto cannotRefract = refractionRatio * sinTheta > 1.0;
-    auto direction =
-        cannotRefract || reflectance(cosTheta, refractionRatio) > randomDouble()
+    auto direction
+        = cannotRefract
+               || reflectance(cosTheta, refractionRatio) > randomDouble()
             ? reflect(unitDirection, record.normal)
             : refract(unitDirection, record.normal, refractionRatio);
 
@@ -68,7 +80,8 @@ auto Dielectric::scatter(const Ray &rayIn, const HitRecord &record) const
     };
 }
 
-auto Dielectric::reflectance(double cosine, double refIdx) -> double {
+auto Dielectric::reflectance(double cosine, double refIdx) -> double
+{
     auto reflectionCoeff = (1 - refIdx) / (1 + refIdx);
     reflectionCoeff *= reflectionCoeff;
     return reflectionCoeff + (1 - reflectionCoeff) * std::pow((1 - cosine), 5);

@@ -1,31 +1,34 @@
 #ifndef HITTABLE_LIST_HPP
 #define HITTABLE_LIST_HPP
 
-#include <tuple>
-#include <vector>
-
 #include <bvh.hpp>
 #include <hittable.hpp>
 #include <sphere.hpp>
 
+#include <tuple>
+#include <vector>
+
 class Interval;
 class Bvh;
 
-class HittableList {
+class HittableList
+{
   public:
     using HittableTuple = std::tuple<std::vector<Sphere>>;
 
     explicit HittableList() noexcept = default;
-    explicit HittableList(concepts::Hittable auto &hittable) noexcept {
+    explicit HittableList(concepts::Hittable auto &hittable) noexcept
+    {
         add(std::forward(hittable));
     }
 
     void clear();
 
     template <concepts::Hittable T, typename... Args>
-    void add(Args &&...args) {
-        const auto &newHittable =
-            std::get<std::vector<T>>(m_objects).emplace_back(
+    void add(Args &&...args)
+    {
+        const auto &newHittable
+            = std::get<std::vector<T>>(m_objects).emplace_back(
                 std::forward<Args>(args)...);
         m_boundingBox = Aabb{m_boundingBox, newHittable.boundingBox()};
     }
