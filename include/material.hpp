@@ -20,11 +20,12 @@ namespace concepts
 {
 
 template <typename T>
-concept Material = requires(const Ray &rayIn, const HitRecord &record) {
-    {
-        std::declval<const T>().scatter(rayIn, record)
-    } -> std::same_as<std::optional<ScatterInfo>>;
-};
+concept Material
+    = requires(const T material, const Ray &rayIn, const HitRecord &record) {
+          {
+              material.scatter(rayIn, record)
+          } -> std::same_as<std::optional<ScatterInfo>>;
+      };
 
 } // namespace concepts
 
