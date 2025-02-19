@@ -21,7 +21,8 @@ Bvh::Bvh(HittableList &list) noexcept
     : Bvh{list.getObjects(),
           0,
           std::get<std::vector<Sphere>>(list.getObjects()).size()}
-{}
+{
+}
 
 Bvh::Bvh(std::tuple<std::vector<Sphere>> &objects,
          size_t start,
@@ -175,4 +176,7 @@ auto Bvh::getNodes() const noexcept -> const std::vector<BvhNode> &
     return m_nodes;
 }
 
-auto Bvh::getNodes() noexcept -> std::vector<BvhNode> & { return m_nodes; }
+auto Bvh::getNodes() noexcept -> std::vector<BvhNode> &
+{
+    return m_nodes;
+}

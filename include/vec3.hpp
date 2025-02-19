@@ -111,7 +111,10 @@ inline auto cross(const Vec3 &lhs, const Vec3 &rhs) noexcept -> Vec3
                 lhs[0] * rhs[1] - lhs[1] * rhs[0]};
 }
 
-inline auto unitVector(const Vec3 &vec) -> Vec3 { return vec / vec.length(); }
+inline auto unitVector(const Vec3 &vec) -> Vec3
+{
+    return vec / vec.length();
+}
 
 inline auto randomInUnitSphere() noexcept -> Vec3
 {

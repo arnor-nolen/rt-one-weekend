@@ -14,15 +14,20 @@ Interval::Interval(double min, double max) noexcept
 Interval::Interval(std::pair<double, double> pair) noexcept
     : m_min{pair.first}
     , m_max{pair.second}
-{}
+{
+}
 
 Interval::Interval(const Interval &interval1,
                    const Interval &interval2) noexcept
     : m_min{std::min(interval1.getMin(), interval2.getMin())}
     , m_max{std::max(interval1.getMax(), interval2.getMax())}
-{}
+{
+}
 
-auto Interval::size() const noexcept -> double { return m_max - m_min; }
+auto Interval::size() const noexcept -> double
+{
+    return m_max - m_min;
+}
 
 auto Interval::contains(double value) const noexcept -> bool
 {
@@ -46,13 +51,25 @@ auto Interval::expand(double delta) const noexcept -> Interval
     return Interval{m_min - padding, m_max + padding};
 }
 
-auto Interval::getMin() const noexcept -> double { return m_min; }
-auto Interval::getMax() const noexcept -> double { return m_max; }
+auto Interval::getMin() const noexcept -> double
+{
+    return m_min;
+}
+auto Interval::getMax() const noexcept -> double
+{
+    return m_max;
+}
 
 const Interval Interval::s_empty{+std::numeric_limits<double>::infinity(),
                                  -std::numeric_limits<double>::infinity()};
 const Interval Interval::s_universe{-std::numeric_limits<double>::infinity(),
                                     +std::numeric_limits<double>::infinity()};
 
-auto Interval::empty() noexcept -> Interval { return s_empty; }
-auto Interval::universe() noexcept -> Interval { return s_universe; }
+auto Interval::empty() noexcept -> Interval
+{
+    return s_empty;
+}
+auto Interval::universe() noexcept -> Interval
+{
+    return s_universe;
+}

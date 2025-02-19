@@ -47,4 +47,7 @@ auto HittableList::getObjects() noexcept -> HittableTuple &
     return m_objects;
 }
 
-void HittableList::updateBvh() noexcept { m_bvh = Bvh{*this}; }
+void HittableList::updateBvh() noexcept
+{
+    m_bvh = Bvh{*this};
+}

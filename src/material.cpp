@@ -5,7 +5,8 @@
 
 Lambertian::Lambertian(const Color &color) noexcept
     : m_albedo{color}
-{}
+{
+}
 
 auto Lambertian::scatter(const Ray &rayIn, const HitRecord &record) const
     -> std::optional<ScatterInfo>
@@ -28,7 +29,8 @@ auto Lambertian::scatter(const Ray &rayIn, const HitRecord &record) const
 Metal::Metal(const Color &color, double fuzz) noexcept
     : m_albedo{color}
     , m_fuzz{fuzz}
-{}
+{
+}
 
 auto Metal::scatter(const Ray &rayIn, const HitRecord &record) const
     -> std::optional<ScatterInfo>
@@ -54,7 +56,8 @@ auto Metal::scatter(const Ray &rayIn, const HitRecord &record) const
 
 Dielectric::Dielectric(double indexOfRefraction) noexcept
     : m_indexOfRefraction{indexOfRefraction}
-{}
+{
+}
 
 auto Dielectric::scatter(const Ray &rayIn, const HitRecord &record) const
     -> std::optional<ScatterInfo>

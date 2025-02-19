@@ -8,6 +8,7 @@ AlignOperands: AlignAfterOperator
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortCompoundRequirementOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
@@ -19,24 +20,6 @@ IndentAccessModifiers: false
 PackConstructorInitializers: Never
 
 # BreakBinaryOperationsStyle: OnePerLine # Available in clang-format 20.
-
-IncludeBlocks: Regroup
-IncludeCategories:
-  - Regex: 'impl\/'
-    Priority: 3
-    SortPriority: 2
-    CaseSensitive: false
-  - Regex: '\.hpp>$'
-    Priority: 2
-    SortPriority: 1
-    CaseSensitive: false
-  - Regex: '.*'
-    Priority: 1
-    SortPriority: 3
-    CaseSensitive: false
-IncludeIsMainRegex: '(Test)?$'
-IncludeIsMainSourceRegex: ''
-MainIncludeChar: AngleBracket
 
 BreakBeforeBraces: Custom
 BraceWrapping:
@@ -55,6 +38,24 @@ BraceWrapping:
   BeforeLambdaBody: true
   BeforeWhile: true
   IndentBraces: false
-  SplitEmptyFunction: false
+  SplitEmptyFunction: true
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
+
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: 'impl\/'
+    Priority: 3
+    SortPriority: 2
+    CaseSensitive: false
+  - Regex: '\.hpp>$'
+    Priority: 2
+    SortPriority: 1
+    CaseSensitive: false
+  - Regex: '.*'
+    Priority: 1
+    SortPriority: 3
+    CaseSensitive: false
+IncludeIsMainRegex: '(Test)?$'
+IncludeIsMainSourceRegex: ''
+MainIncludeChar: AngleBracket

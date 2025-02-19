@@ -16,7 +16,8 @@ Aabb::Aabb(const Interval &intervalX,
     : m_x{intervalX}
     , m_y{intervalY}
     , m_z{intervalZ}
-{}
+{
+}
 
 Aabb::Aabb(const Point3 &pointA, const Point3 &pointB) noexcept
 {
@@ -29,7 +30,8 @@ Aabb::Aabb(const Aabb &box1, const Aabb &box2) noexcept
     : m_x{box1.getX(), box2.getX()}
     , m_y{box1.getY(), box2.getY()}
     , m_z{box1.getZ(), box2.getZ()}
-{}
+{
+}
 
 auto Aabb::axisInterval(Axis axis) const noexcept -> const Interval &
 {
@@ -72,11 +74,20 @@ auto Aabb::hit(const Ray &ray, const Interval &rayT) const noexcept -> bool
     return true;
 }
 
-auto Aabb::getX() const noexcept -> Interval { return m_x; }
+auto Aabb::getX() const noexcept -> Interval
+{
+    return m_x;
+}
 
-auto Aabb::getY() const noexcept -> Interval { return m_y; }
+auto Aabb::getY() const noexcept -> Interval
+{
+    return m_y;
+}
 
-auto Aabb::getZ() const noexcept -> Interval { return m_z; }
+auto Aabb::getZ() const noexcept -> Interval
+{
+    return m_z;
+}
 
 auto Aabb::longestAxis() const noexcept -> Axis
 {
