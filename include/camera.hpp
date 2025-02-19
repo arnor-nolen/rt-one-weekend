@@ -37,12 +37,12 @@ struct CameraProps
 
 class Camera
 {
-  public:
+public:
     explicit Camera(CameraProps cameraProps);
 
     void render(const concepts::Hittable auto &world);
 
-  private:
+private:
     void initialize();
 
     auto rayColor(const Ray &ray,

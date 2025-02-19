@@ -12,7 +12,7 @@ class Interval;
 
 class Sphere
 {
-  public:
+public:
     explicit Sphere(const Point3 &center,
                     double radius,
                     MaterialVariant material) noexcept;
@@ -31,7 +31,7 @@ class Sphere
     [[nodiscard]]
     auto sphereCenter(double time) const noexcept -> Point3;
 
-  private:
+private:
     Point3 m_center1;
     Point3 m_centerVec;
     double m_radius;

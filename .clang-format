@@ -3,6 +3,7 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 CommentPragmas: '^ NOLINT'
 
+AccessModifierOffset: -4
 AlignOperands: AlignAfterOperator
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -14,6 +15,7 @@ BreakAfterAttributes: Always
 BreakBeforeBinaryOperators: All
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
+IndentAccessModifiers: false
 PackConstructorInitializers: Never
 
 # BreakBinaryOperationsStyle: OnePerLine # Available in clang-format 20.

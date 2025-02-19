@@ -13,7 +13,7 @@ class Bvh;
 
 class HittableList
 {
-  public:
+public:
     using HittableTuple = std::tuple<std::vector<Sphere>>;
 
     explicit HittableList() noexcept = default;
@@ -47,7 +47,7 @@ class HittableList
 
     void updateBvh() noexcept;
 
-  private:
+private:
     HittableTuple m_objects;
     Bvh m_bvh;
     Aabb m_boundingBox;

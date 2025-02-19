@@ -5,7 +5,7 @@
 
 class Interval
 {
-  public:
+public:
     static const Interval s_empty;
     static const Interval s_universe;
 
@@ -42,7 +42,7 @@ class Interval
     [[nodiscard]]
     auto getMax() const noexcept -> double;
 
-  private:
+private:
     double m_min;
     double m_max;
 };

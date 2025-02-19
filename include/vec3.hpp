@@ -11,7 +11,7 @@
 class Vec3
 {
 
-  public:
+public:
     explicit Vec3() noexcept;
     explicit Vec3(double value0, double value1, double value2) noexcept;
 
@@ -48,7 +48,7 @@ class Vec3
     [[nodiscard]]
     auto nearZero() const -> bool;
 
-  private:
+private:
     std::array<double, 3> m_vec;
 };
 
@@ -59,7 +59,7 @@ using Point3 = Vec3;
 template <>
 class std::formatter<Vec3>
 {
-  public:
+public:
     static constexpr auto parse(std::format_parse_context &ctx);
 
     template <typename Context>

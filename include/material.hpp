@@ -31,14 +31,14 @@ concept Material
 
 class Lambertian
 {
-  public:
+public:
     explicit Lambertian(const Color &color) noexcept;
 
     [[nodiscard]]
     auto scatter(const Ray &rayIn, const HitRecord &record) const
         -> std::optional<ScatterInfo>;
 
-  private:
+private:
     Color m_albedo;
 };
 
@@ -46,14 +46,14 @@ static_assert(concepts::Material<Lambertian>);
 
 class Metal
 {
-  public:
+public:
     explicit Metal(const Color &color, double fuzz) noexcept;
 
     [[nodiscard]]
     auto scatter(const Ray &rayIn, const HitRecord &record) const
         -> std::optional<ScatterInfo>;
 
-  private:
+private:
     Color m_albedo;
     double m_fuzz;
 };
@@ -62,14 +62,14 @@ static_assert(concepts::Material<Metal>);
 
 class Dielectric
 {
-  public:
+public:
     explicit Dielectric(double indexOfRefraction) noexcept;
 
     [[nodiscard]]
     auto scatter(const Ray &rayIn, const HitRecord &record) const
         -> std::optional<ScatterInfo>;
 
-  private:
+private:
     static auto reflectance(double cosine, double refIdx) -> double;
 
     double m_indexOfRefraction;

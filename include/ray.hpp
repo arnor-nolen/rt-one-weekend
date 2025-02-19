@@ -5,7 +5,7 @@
 
 class Ray
 {
-  public:
+public:
     explicit Ray() noexcept = default;
     explicit Ray(const Point3 &origin, const Vec3 &direction) noexcept;
     explicit Ray(const Point3 &origin,
@@ -24,7 +24,7 @@ class Ray
     [[nodiscard]]
     auto time() const noexcept -> double;
 
-  private:
+private:
     Point3 m_origin;
     Vec3 m_direction;
     double m_time{0.0};

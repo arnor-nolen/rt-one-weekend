@@ -13,13 +13,13 @@ class HittableList;
 
 class BvhNode
 {
-  public:
+public:
     explicit BvhNode() noexcept = default;
 
     [[nodiscard]]
     auto boundingBox() const noexcept -> const Aabb &;
 
-  private:
+private:
     [[nodiscard]]
     static auto boxCompare(const Sphere &hittableA,
                            const Sphere &hittableB,
@@ -37,7 +37,7 @@ class BvhNode
 
 class Bvh
 {
-  public:
+public:
     explicit Bvh() noexcept = default;
     explicit Bvh(HittableList &list) noexcept;
     explicit Bvh(std::tuple<std::vector<Sphere>> &objects,
@@ -56,7 +56,7 @@ class Bvh
     [[nodiscard]]
     auto getNodes() noexcept -> std::vector<BvhNode> &;
 
-  private:
+private:
     void initializeNodes(std::tuple<std::vector<Sphere>> &objects,
                          size_t start,
                          size_t end) noexcept;

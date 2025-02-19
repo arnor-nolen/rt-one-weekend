@@ -8,7 +8,7 @@
 
 class Aabb
 {
-  public:
+public:
     static const Aabb s_empty;
     static const Aabb s_universe;
 
@@ -37,7 +37,7 @@ class Aabb
     [[nodiscard]]
     auto longestAxis() const noexcept -> Axis;
 
-  private:
+private:
     Interval m_x;
     Interval m_y;
     Interval m_z;
