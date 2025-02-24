@@ -17,7 +17,9 @@ BreakBeforeBinaryOperators: All
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
 IndentAccessModifiers: false
+IndentRequiresClause: false
 PackConstructorInitializers: Never
+RequiresExpressionIndentation: OuterScope
 
 # BreakBinaryOperationsStyle: OnePerLine # Available in clang-format 20.
 
@@ -39,8 +41,8 @@ BraceWrapping:
   BeforeWhile: true
   IndentBraces: false
   SplitEmptyFunction: true
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
 
 IncludeBlocks: Regroup
 IncludeCategories:
@@ -59,3 +61,5 @@ IncludeCategories:
 IncludeIsMainRegex: '(Test)?$'
 IncludeIsMainSourceRegex: ''
 MainIncludeChar: AngleBracket
+
+Standard: c++17 # Needed for correct requires clause brace formatting. Broken on c++20 and higher.
