@@ -3,7 +3,7 @@
 #include <degrees_to_radians.hpp>
 
 Camera::Camera(CameraProps cameraProps)
-    : m_cameraProps{std::move(cameraProps)}
+    : m_cameraProps{ std::move(cameraProps) }
 {
     initialize();
 }
@@ -67,7 +67,7 @@ auto Camera::getRay(size_t iCoord, size_t jCoord) const -> Ray
     auto rayDirection = pixelSample - rayOrigin;
     auto rayTime = randomDouble();
 
-    return Ray{rayOrigin, rayDirection, rayTime};
+    return Ray{ rayOrigin, rayDirection, rayTime };
 }
 
 auto Camera::pixelSampleSquare() const -> Vec3

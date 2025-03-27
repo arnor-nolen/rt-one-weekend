@@ -13,7 +13,7 @@ namespace concepts
 {
 
 template <typename H>
-concept Hittable = requires(const H hittable, const Ray &ray, Interval rayT)
+concept Hittable = requires(const H hittable, const Ray &ray, Interval rayT) //
 {
     {
         hittable.hit(ray, rayT)

@@ -36,7 +36,7 @@ private:
     Point3 m_centerVec;
     double m_radius;
     MaterialVariant m_material;
-    bool m_isMoving{false};
+    bool m_isMoving{ false };
     Aabb m_boundingBox;
 };
 

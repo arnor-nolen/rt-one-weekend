@@ -25,12 +25,12 @@ private:
                            const Sphere &hittableB,
                            Axis axis) noexcept -> bool;
 
-    size_t m_childIndexLeft{std::numeric_limits<size_t>::max()};
-    size_t m_childIndexRight{std::numeric_limits<size_t>::max()};
+    size_t m_childIndexLeft{ std::numeric_limits<size_t>::max() };
+    size_t m_childIndexRight{ std::numeric_limits<size_t>::max() };
 
-    const Sphere *m_sphere{nullptr};
+    const Sphere *m_sphere{ nullptr };
 
-    Aabb m_boundingBox{Aabb::s_empty};
+    Aabb m_boundingBox{ Aabb::s_empty };
 
     friend Bvh;
 };

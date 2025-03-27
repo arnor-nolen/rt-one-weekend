@@ -5,9 +5,9 @@
 auto randomDouble() noexcept -> double
 {
     static auto s_distribution
-        = std::uniform_real_distribution<double>{0.0, 1.0};
+        = std::uniform_real_distribution<double>{ 0.0, 1.0 };
     // NOLINTNEXTLINE(cert-msc32-c, cert-msc51-cpp)
-    thread_local static auto s_generator = std::mt19937{3};
+    thread_local static auto s_generator = std::mt19937{ 3 };
 
     return s_distribution(s_generator);
 };

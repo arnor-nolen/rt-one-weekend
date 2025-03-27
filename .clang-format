@@ -7,8 +7,13 @@ AccessModifierOffset: -4
 AlignOperands: AlignAfterOperator
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
 AllowShortCompoundRequirementOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
@@ -16,11 +21,14 @@ BreakAfterAttributes: Always
 BreakBeforeBinaryOperators: All
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
+Cpp11BracedListStyle: false
 IndentAccessModifiers: false
-IndentRequiresClause: false
+IndentRequiresClause: true
 PackConstructorInitializers: Never
+RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 
+# AllowShortNamespacesOnASingleLine: false # Available in clang-format 20.
 # BreakBinaryOperationsStyle: OnePerLine # Available in clang-format 20.
 
 BreakBeforeBraces: Custom
@@ -62,4 +70,4 @@ IncludeIsMainRegex: '(Test)?$'
 IncludeIsMainSourceRegex: ''
 MainIncludeChar: AngleBracket
 
-Standard: c++17 # Needed for correct requires clause brace formatting. Broken on c++20 and higher.
+Standard: c++20

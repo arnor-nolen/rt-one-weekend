@@ -30,7 +30,7 @@ public:
         const auto &newHittable
             = std::get<std::vector<T>>(m_objects).emplace_back(
                 std::forward<Args>(args)...);
-        m_boundingBox = Aabb{m_boundingBox, newHittable.boundingBox()};
+        m_boundingBox = Aabb{ m_boundingBox, newHittable.boundingBox() };
     }
 
     [[nodiscard]]

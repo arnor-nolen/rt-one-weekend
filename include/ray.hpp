@@ -27,7 +27,7 @@ public:
 private:
     Point3 m_origin;
     Vec3 m_direction;
-    double m_time{0.0};
+    double m_time{ 0.0 };
 };
 
 #endif

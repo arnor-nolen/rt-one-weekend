@@ -18,9 +18,9 @@ struct ObjectRange
 } // namespace
 
 Bvh::Bvh(HittableList &list) noexcept
-    : Bvh{list.getObjects(),
-          0,
-          std::get<std::vector<Sphere>>(list.getObjects()).size()}
+    : Bvh{ list.getObjects(),
+           0,
+           std::get<std::vector<Sphere>>(list.getObjects()).size() }
 {
 }
 
@@ -60,7 +60,7 @@ auto Bvh::hit(const Ray &ray, Interval rayT) const -> std::optional<HitRecord>
 
             if (hitCurrent)
             {
-                rayTBeforeHit = Interval{rayT.getMin(), hitCurrent->time};
+                rayTBeforeHit = Interval{ rayT.getMin(), hitCurrent->time };
                 hitClosest = hitCurrent;
             }
         }
@@ -117,8 +117,8 @@ void Bvh::initializeNodes(std::tuple<std::vector<Sphere>> &objects,
                  ++objectIndex)
             {
                 currentNode.m_boundingBox
-                    = Aabb{currentNode.m_boundingBox,
-                           spheres[objectIndex].boundingBox()};
+                    = Aabb{ currentNode.m_boundingBox,
+                            spheres[objectIndex].boundingBox() };
             }
 
             const Axis axis = currentNode.m_boundingBox.longestAxis();

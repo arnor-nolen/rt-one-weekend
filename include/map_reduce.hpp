@@ -68,7 +68,7 @@ void parallelizeForEach(std::ranges::input_range auto range,
     };
 
     const auto spawnJthread = [&](std::ranges::input_range auto subrange)
-    { return std::jthread{chunkMapReduce, subrange}; };
+    { return std::jthread{ chunkMapReduce, subrange }; };
 
     // Figure out how to split into evenly sized bins.
     range | std::views::chunk(range.size() / threads)

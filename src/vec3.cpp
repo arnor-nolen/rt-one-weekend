@@ -4,12 +4,12 @@
 #include <cmath>
 
 Vec3::Vec3() noexcept
-    : m_vec{0, 0, 0}
+    : m_vec{ 0, 0, 0 }
 {
 }
 
 Vec3::Vec3(double value0, double value1, double value2) noexcept
-    : m_vec{value0, value1, value2}
+    : m_vec{ value0, value1, value2 }
 {
 }
 
@@ -30,7 +30,7 @@ auto Vec3::getZ() const noexcept -> double
 
 auto Vec3::operator-() const noexcept -> Vec3
 {
-    return Vec3{-m_vec[0], -m_vec[1], -m_vec[2]};
+    return Vec3{ -m_vec[0], -m_vec[1], -m_vec[2] };
 }
 
 auto Vec3::operator[](size_t index) const noexcept -> double
@@ -84,14 +84,14 @@ auto Vec3::lengthSquared() const noexcept -> double
 
 auto Vec3::random() noexcept -> Vec3
 {
-    return Vec3{randomDouble(), randomDouble(), randomDouble()};
+    return Vec3{ randomDouble(), randomDouble(), randomDouble() };
 }
 
 auto Vec3::random(double min, double max) noexcept -> Vec3
 {
-    return Vec3{randomDouble(min, max),
-                randomDouble(min, max),
-                randomDouble(min, max)};
+    return Vec3{ randomDouble(min, max),
+                 randomDouble(min, max),
+                 randomDouble(min, max) };
 }
 
 auto Vec3::nearZero() const -> bool

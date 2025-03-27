@@ -19,7 +19,7 @@ auto HittableList::hit(const Ray &ray, Interval rayT) const
     const auto vectorLambda = [&](const auto &object)
     {
         auto tempRecord
-            = object.hit(ray, Interval{rayT.getMin(), closestSoFar});
+            = object.hit(ray, Interval{ rayT.getMin(), closestSoFar });
         if (tempRecord)
         {
             closestSoFar = tempRecord->time;
@@ -49,5 +49,5 @@ auto HittableList::getObjects() noexcept -> HittableTuple &
 
 void HittableList::updateBvh() noexcept
 {
-    m_bvh = Bvh{*this};
+    m_bvh = Bvh{ *this };
 }

@@ -28,9 +28,9 @@ struct CameraProps
     size_t samplesPerPixel = 10;
     size_t maxDepth = 10;
     double vFov = 90;
-    Point3 lookFrom = Point3{0, 0, -1};
-    Point3 lookAt = Point3{0, 0, 0};
-    Vec3 vUp = Vec3{0, 1, 0};
+    Point3 lookFrom = Point3{ 0, 0, -1 };
+    Point3 lookAt = Point3{ 0, 0, 0 };
+    Vec3 vUp = Vec3{ 0, 1, 0 };
     double defocusAngle = 0.0;
     double focusDist = 10.0;
 };
@@ -90,7 +90,7 @@ auto Camera::calculatePixelColor(
     const concepts::Hittable auto &world) const noexcept -> Color
 {
 
-    auto pixelColor = Color{0, 0, 0};
+    auto pixelColor = Color{ 0, 0, 0 };
 
     for (size_t sample = 0; sample < m_cameraProps.samplesPerPixel; ++sample)
     {
@@ -108,7 +108,7 @@ void Camera::render(const concepts::Hittable auto &world)
 {
     const auto numOfPixels = m_image.width() * m_image.height();
 
-    auto progress = std::atomic<size_t>{0};
+    auto progress = std::atomic<size_t>{ 0 };
 
     const auto lambda = [&, this](const auto &pixelId)
     {
@@ -117,9 +117,10 @@ void Camera::render(const concepts::Hittable auto &world)
 
         const auto color = calculatePixelColor(idxW, idxH, world);
 
-        const auto colorArray = std::array{static_cast<uint8_t>(color.getX()),
-                                           static_cast<uint8_t>(color.getY()),
-                                           static_cast<uint8_t>(color.getZ())};
+        const auto colorArray
+            = std::array{ static_cast<uint8_t>(color.getX()),
+                          static_cast<uint8_t>(color.getY()),
+                          static_cast<uint8_t>(color.getZ()) };
 
         m_image.draw_point(idxW, idxH, colorArray.data());
 
@@ -150,14 +151,14 @@ auto Camera::rayColor(const Ray &ray,
                       const concepts::Hittable auto &world) const -> Color
 {
 
-    auto outputColor = Color{1.0, 1.0, 1.0};
+    auto outputColor = Color{ 1.0, 1.0, 1.0 };
     auto currentRay = ray;
 
     for (size_t i = 0u; i < depth; ++i)
     {
         const auto record = world.hit(
             currentRay,
-            Interval{0.001, +std::numeric_limits<double>::infinity()});
+            Interval{ 0.001, +std::numeric_limits<double>::infinity() });
 
         // Color background.
         if (!record)
@@ -165,8 +166,8 @@ auto Camera::rayColor(const Ray &ray,
             Vec3 unitDirection = unitVector(currentRay.direction());
             const auto currentValue = 0.5 * (unitDirection.getY() + 1.0);
 
-            const auto skyColor = (1.0 - currentValue) * Color{1.0, 1.0, 1.0}
-                                + currentValue * Color{0.5, 0.7, 1.0};
+            const auto skyColor = (1.0 - currentValue) * Color{ 1.0, 1.0, 1.0 }
+                                + currentValue * Color{ 0.5, 0.7, 1.0 };
 
             return outputColor * skyColor;
         }
@@ -178,7 +179,7 @@ auto Camera::rayColor(const Ray &ray,
 
         if (!scatterInfo)
         {
-            return Color{0, 0, 0};
+            return Color{ 0, 0, 0 };
         }
 
         outputColor = outputColor * scatterInfo->attenuation;
@@ -186,7 +187,7 @@ auto Camera::rayColor(const Ray &ray,
     }
 
     // Recursion limit exceeded.
-    return Color{0, 0, 0};
+    return Color{ 0, 0, 0 };
 }
 
 #endif

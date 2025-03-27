@@ -1,15 +1,15 @@
 #include <ray.hpp>
 
 Ray::Ray(const Point3 &origin, const Vec3 &direction) noexcept
-    : m_origin{origin}
-    , m_direction{direction}
+    : m_origin{ origin }
+    , m_direction{ direction }
 {
 }
 
 Ray::Ray(const Point3 &origin, const Vec3 &direction, double time) noexcept
-    : m_origin{origin}
-    , m_direction{direction}
-    , m_time{time}
+    : m_origin{ origin }
+    , m_direction{ direction }
+    , m_time{ time }
 {
 }
 

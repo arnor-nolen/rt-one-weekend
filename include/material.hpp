@@ -21,7 +21,7 @@ namespace concepts
 
 template <typename T>
 concept Material
-    = requires(const T material, const Ray &rayIn, const HitRecord &record)
+    = requires(const T material, const Ray &rayIn, const HitRecord &record) //
 {
     {
         material.scatter(rayIn, record)
